@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class FavoriteScreen extends StatefulWidget {
+  const FavoriteScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Text("Home"),
+            Text("Favorite"),
           ],
         ),
       ),

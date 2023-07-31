@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<MenuScreen> createState() => _MenuScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: [
-            Text("Home"),
+            Text("Menu"),
           ],
         ),
       ),
