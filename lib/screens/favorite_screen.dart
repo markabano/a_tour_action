@@ -22,7 +22,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: BottomNavigation(homeFill: false, mapFill: false, favFill: true, menuFill: false),
     );
   }
 }

@@ -22,7 +22,7 @@ class _MenuScreenState extends State<MenuScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: BottomNavigation(homeFill: false, mapFill: false, favFill: false, menuFill: true),
     );
   }
 }

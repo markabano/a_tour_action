@@ -5,8 +5,12 @@ import 'package:flutter/material.dart';
 import '../screens/menu_screen.dart';
 
 class BottomNavigation extends StatelessWidget {
-  const BottomNavigation({
-    super.key,
+  bool homeFill;
+  bool mapFill;
+  bool favFill;
+  bool menuFill;
+  BottomNavigation({
+    super.key, required this.favFill, required this.homeFill, required this.mapFill, required this.menuFill
   });
 
   @override
@@ -20,59 +24,71 @@ class BottomNavigation extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
+              homeFill? Icons.home_filled : 
               Icons.home_outlined,
               color: Colors.blue,
             ),
             onPressed: () {
-              Navigator.pushReplacement(
+             if(!homeFill){
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const HomeScreen(),
                 ),
               );
+             }
             },
           ),
           IconButton(
-            icon: const Icon(
+            icon:  Icon(
+              mapFill? Icons.map_sharp :
               Icons.map_outlined,
               color: Colors.blue,
             ),
             onPressed: () {
-              Navigator.pushReplacement(
+              if(!mapFill){
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const MapScreen(),
                 ),
               );
+              }
             },
           ),
           IconButton(
-            icon: const Icon(
+            icon:  Icon(
+              favFill? Icons.favorite :
               Icons.favorite_border_outlined,
               color: Colors.blue,
             ),
             onPressed: () {
-              Navigator.pushReplacement(
+              if(!favFill){
+                Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const FavoriteScreen(),
                 ),
               );
+              }
             },
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
+              menuFill? Icons.menu_open :
               Icons.menu_outlined,
               color: Colors.blue,
             ),
             onPressed: () {
-              Navigator.pushReplacement(
+             if(!menuFill){
+               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const MenuScreen(),
                 ),
               );
+             }
             },
           ),
         ],
