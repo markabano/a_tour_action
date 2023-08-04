@@ -1,0 +1,94 @@
+{
+    "data":[
+        {
+            "id" : 1,
+            "name" : "Historical Core",
+            "lat" : 16.399222184994507,
+            "lng" : 120.61753165693972
+        },
+        {
+            "id" : 2,
+            "name" : "Heritage Hill and Nature Park Garden (Old Diplomat Hotel)",
+            "lat" : 16.40399209758665,
+            "lng" : 120.58725441124297
+        },
+        {
+            "id" : 3,
+            "name" : "Bell House",
+            "lat" : 16.399331793443256,
+            "lng" : 120.61905615726636
+        },
+        {
+            "id" : 4,
+            "name" : "Laperal White House",
+            "lat" : 16.411241168566324,
+            "lng" : 120.6054291284311
+        },
+        {
+            "id" : 5,
+            "name" : "Cemetery Of Negativism",
+            "lat" : 16.399620369530364,
+            "lng" : 120.61764716891348
+        },
+        {
+            "id" : 6,
+            "name" : "Emilio F. Aguinaldo Museum",
+            "lat" : 16.412171236255755,
+            "lng" : 120.60080932619908
+        },
+        {
+            "id" : 7,
+            "name" : "Mines View Observation Deck",
+            "lat" : 16.41957109790786,
+            "lng" : 120.62789092591491
+        },
+        {
+            "id" : 8,
+            "name" : "Our Lady of Lourdes Grotto",
+            "lat" : 16.40959296656367,
+            "lng" : 120.58057046492034
+        },
+        {
+            "id" : 9,
+            "name" : "Tam-awan Village",
+            "lat" : 16.42965008040838,
+            "lng" : 120.57638515719748
+        },
+        {
+            "id" : 10,
+            "name" : "History trail",
+            "lat" : 16.398384623789145,
+            "lng" : 120.61885077978056
+        },
+        {
+            "id" : 11,
+            "name" : "Museo Kordilyera",
+            "lat" : 16.405751328863772,
+            "lng" : 120.59769194372842
+        },
+        {
+            "id" : 12,
+            "name" : "Burnham Park",
+            "lat" : 16.412378218856116,
+            "lng" : 120.59296956596052
+        },
+        {
+            "id" : 13,
+            "name" : "Lion’s Head",
+            "lat" : 16.36751753864695,
+            "lng" : 120.60600944686503
+        },
+        {
+            "id" : 14,
+            "name" : "Bell Amphitheater",
+            "lat" : 16.398790790572257,
+            "lng" : 120.6177925954449
+        },
+        {
+            "id" : 15,
+            "name" : "Baguio Museum",
+            "lat" : 16.407039781729914,
+            "lng" : 120.59843781687438
+        }
+    ]
+}
