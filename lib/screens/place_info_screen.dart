@@ -2,8 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
 class PlaceInfoScreen extends StatefulWidget {
-  const PlaceInfoScreen({super.key, required this.placeName});
-  final String placeName;
+  const PlaceInfoScreen({super.key, required this.place});
+  final dynamic place;
 
   @override
   State<PlaceInfoScreen> createState() => _PlaceInfoScreenState();
@@ -14,7 +14,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.placeName),
+        title: Text(widget.place["name"]),
         centerTitle: true,
       ),
       body: Column(
@@ -22,25 +22,22 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
           const SizedBox(
             height: 10.0,
           ),
-          CarouselSlider(
-            items: [
-              1,
-              2,
-              3,
-              4,
-              5,
-            ].map((e) {
+          CarouselSlider.builder(
+            itemCount: 5,
+            itemBuilder: (context, index, realIndex) {
+              final picture = widget.place["pictures"][index];
+
               return Container(
-                width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.symmetric(horizontal: 5.0),
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                  borderRadius: BorderRadius.circular(10),
+                child: Center(
+                  child: Image.asset(
+                    picture,
+                    fit: BoxFit.cover,
+                    width: 1000,
+                  ),
                 ),
-                child: Text("sample picture goes here ${e.toString()}"),
               );
-            }).toList(),
-            options: CarouselOptions(height: 300),
+            },
+            options: CarouselOptions(height: 400),
           ),
           const SizedBox(
             height: 20.0,

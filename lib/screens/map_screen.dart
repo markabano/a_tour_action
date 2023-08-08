@@ -60,11 +60,12 @@ class _MapScreenState extends State<MapScreen> {
             context,
             MaterialPageRoute(
                 builder: (context) => PlaceInfoScreen(
-                      placeName: eachplace["name"],
+                      place: eachplace,
                     )),
           ),
         ),
       );
+
       _markers.add(marker);
       setState(() {
         isLoaded = true;
