@@ -14,35 +14,38 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.place["name"]),
+        title: Text(
+          widget.place["name"],
+        ),
         centerTitle: true,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         children: [
-          const SizedBox(
-            height: 10.0,
-          ),
           CarouselSlider.builder(
             itemCount: 5,
             itemBuilder: (context, index, realIndex) {
-              final picture = widget.place["pictures"][index];
+              final picture = widget.place["pictures"];
 
-              return Container(
-                child: Center(
-                  child: Image.asset(
-                    picture,
-                    fit: BoxFit.cover,
-                    width: 1000,
-                  ),
+              return Center(
+                child: Image.asset(
+                  "assets/images/${picture[index]}.jpg",
+                  fit: BoxFit.cover,
+                  width: 1000,
+                  height: 300,
                 ),
               );
             },
-            options: CarouselOptions(height: 400),
+            options: CarouselOptions(
+              height: 400,
+              autoPlay: true,
+              enlargeCenterPage: true,
+            ),
           ),
           const SizedBox(
             height: 20.0,
           ),
-          Text("Information goes here"),
+          Text(widget.place["description"]),
         ],
       ),
     );

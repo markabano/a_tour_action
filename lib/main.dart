@@ -1,3 +1,4 @@
+import 'package:a_tour_action/screens/home_screen.dart';
 import 'package:a_tour_action/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class ATourAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

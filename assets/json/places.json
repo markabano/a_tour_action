@@ -6,14 +6,13 @@
             "lat" : 16.399222184994507,
             "lng" : 120.61753165693972,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+               "",
+               "",
+               "",
+               "",
+               ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 2,
@@ -21,14 +20,13 @@
             "lat" : 16.40399209758665,
             "lng" : 120.58725441124297,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 3,
@@ -36,14 +34,13 @@
             "lat" : 16.399331793443256,
             "lng" : 120.61905615726636,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 4,
@@ -51,14 +48,13 @@
             "lat" : 16.411241168566324,
             "lng" : 120.6054291284311,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 5,
@@ -66,14 +62,13 @@
             "lat" : 16.399620369530364,
             "lng" : 120.61764716891348,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 6,
@@ -81,14 +76,13 @@
             "lat" : 16.412171236255755,
             "lng" : 120.60080932619908,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 7,
@@ -96,14 +90,13 @@
             "lat" : 16.41957109790786,
             "lng" : 120.62789092591491,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 8,
@@ -111,14 +104,13 @@
             "lat" : 16.40959296656367,
             "lng" : 120.58057046492034,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 9,
@@ -126,14 +118,13 @@
             "lat" : 16.42965008040838,
             "lng" : 120.57638515719748,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 10,
@@ -141,14 +132,13 @@
             "lat" : 16.398384623789145,
             "lng" : 120.61885077978056,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 11,
@@ -156,14 +146,13 @@
             "lat" : 16.405751328863772,
             "lng" : 120.59769194372842,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 12,
@@ -171,14 +160,13 @@
             "lat" : 16.412378218856116,
             "lng" : 120.59296956596052,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 13,
@@ -186,14 +174,13 @@
             "lat" : 16.36751753864695,
             "lng" : 120.60600944686503,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 14,
@@ -201,14 +188,13 @@
             "lat" : 16.398790790572257,
             "lng" : 120.6177925954449,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         },
         {
             "id" : 15,
@@ -216,14 +202,13 @@
             "lat" : 16.407039781729914,
             "lng" : 120.59843781687438,
             "pictures" : [
-                {
-                    "picture1" : "",
-                    "picture2" : "",
-                    "picture3" : "",
-                    "picture4" : "",
-                    "picture5" : ""
-                }
-            ]
+                "",
+                "",
+                "",
+                "",
+                ""
+            ], 
+            "description" : "Lorem Ipsum"
         }
     ]
 }
