@@ -1,8 +1,13 @@
-import 'package:a_tour_action/screens/home_screen.dart';
+import 'package:a_tour_action/firebase_options.dart';
 import 'package:a_tour_action/screens/login_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const ATourAction());
 }
 
@@ -12,7 +17,7 @@ class ATourAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: HomeScreen(),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

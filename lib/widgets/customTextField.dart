@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final controller;
   final String hintText;
+  final IconData icon;
   final bool obscureText;
   const CustomTextField({
     super.key,
     required this.controller,
     required this.hintText,
+    required this.icon,
     required this.obscureText,
   });
 
@@ -20,9 +22,7 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         decoration: InputDecoration(
           hintText: hintText,
-          prefixIcon: hintText == 'Email'
-              ? const Icon(Icons.email)
-              : const Icon(Icons.lock),
+          prefixIcon: Icon(icon),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Colors.white),

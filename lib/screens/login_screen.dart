@@ -1,3 +1,4 @@
+import 'package:a_tour_action/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/customTextField.dart';
 
@@ -8,7 +9,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.lightBlue[100],
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -40,11 +41,13 @@ class LoginScreen extends StatelessWidget {
                 CustomTextField(
                     controller: emailController,
                     hintText: 'Email',
+                    icon: Icons.email,
                     obscureText: false),
                 const SizedBox(height: 10),
                 CustomTextField(
                     controller: passwordController,
                     hintText: 'Password',
+                    icon: Icons.lock,
                     obscureText: true),
                 const SizedBox(height: 25),
                 ElevatedButton(
@@ -65,7 +68,11 @@ class LoginScreen extends StatelessWidget {
                     const Text('Not a member yet?'),
                     const SizedBox(width: 5),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      ),
                       child: const Text('Register here',
                           style: TextStyle(
                             color: Colors.blue,
