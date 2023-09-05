@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final controller;
   final String hintText;
   final IconData icon;
-  final bool obscureText;
-  const CustomTextField({
+  bool obscureText;
+  CustomTextField({
     super.key,
     required this.controller,
     required this.hintText,
@@ -14,15 +14,33 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
-        controller: controller,
-        obscureText: obscureText,
+        controller: widget.controller,
+        obscureText: widget.obscureText,
         decoration: InputDecoration(
-          hintText: hintText,
-          prefixIcon: Icon(icon),
+          hintText: widget.hintText,
+          prefixIcon: Icon(widget.icon),
+          suffixIcon: widget.hintText == 'Password' ||
+                  widget.hintText == 'Confirm Password'
+              ? IconButton(
+                  onPressed: () {
+                    setState(() {
+                      widget.obscureText = !widget.obscureText;
+                    });
+                  },
+                  icon: widget.obscureText == true
+                      ? Icon(Icons.visibility_off)
+                      : Icon(Icons.visibility),
+                )
+              : null,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
             borderSide: const BorderSide(color: Colors.white),

@@ -22,7 +22,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
-      bottomNavigationBar: BottomNavigation(homeFill: true, mapFill: false, favFill: false, menuFill: false),
+      bottomNavigationBar: BottomNavigation(
+          homeFill: true, mapFill: false, favFill: false, menuFill: false),
     );
   }
 }

@@ -30,6 +30,7 @@ environment:
 dependencies:
   carousel_slider: ^4.2.1
   cupertino_icons: ^1.0.2
+  firebase_auth: ^4.9.0
   firebase_core: ^2.15.1
   flutter:
     sdk: flutter

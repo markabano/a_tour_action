@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
+import 'auth_page.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -16,13 +18,30 @@ class _MenuScreenState extends State<MenuScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Text("Menu"),
+            ElevatedButton(
+              onPressed: logout,
+              child: const Text('Logout'),
+            )
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
-      bottomNavigationBar: BottomNavigation(homeFill: false, mapFill: false, favFill: false, menuFill: true),
+      bottomNavigationBar: BottomNavigation(
+          homeFill: false, mapFill: false, favFill: false, menuFill: true),
+    );
+  }
+
+  void logout() async {
+    //Logout
+    await FirebaseAuth.instance.signOut();
+
+    //Go to Auth Page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AuthPage(),
+      ),
     );
   }
 }

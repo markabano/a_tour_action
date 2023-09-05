@@ -1,5 +1,5 @@
 import 'package:a_tour_action/firebase_options.dart';
-import 'package:a_tour_action/screens/login_screen.dart';
+import 'package:a_tour_action/screens/auth_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +17,7 @@ class ATourAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: LoginScreen(),
+      home: AuthPage(),
       debugShowCheckedModeBanner: false,
     );
   }

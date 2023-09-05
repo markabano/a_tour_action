@@ -1,11 +1,20 @@
 import 'package:a_tour_action/screens/register_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/customTextField.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
+
   final passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                     obscureText: true),
                 const SizedBox(height: 25),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: signIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     minimumSize: const Size(150, 50),
@@ -87,5 +96,86 @@ class LoginScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void signIn() async {
+    //show circular progress indicator
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    //sign in
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+
+      //hide circular progress indicator
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      //hide circular progress indicator
+      Navigator.pop(context);
+
+      //Wrong Email
+      if (e.code == 'user-not-found') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('No user found for that email.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                )
+              ],
+            );
+          },
+        );
+      }
+
+      //Wrong Password
+      else if (e.code == 'wrong-password') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('Wrong password provided for that user.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                )
+              ],
+            );
+          },
+        );
+      }
+
+      //Wrong Email Format
+      else if (e.code == 'invalid-email') {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: const Text('The email address is badly formatted.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                )
+              ],
+            );
+          },
+        );
+      }
+    }
   }
 }
