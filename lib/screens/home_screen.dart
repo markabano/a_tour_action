@@ -16,14 +16,26 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Text("Home"),
+            Container(
+              width: double.infinity,
+              height: 200,
+              color: Colors.blue,
+              child: Text('Weather'),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              height: 200,
+              color: Colors.amber,
+              child: Text('Favourites'),
+            ),
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: true, mapFill: false, favFill: false, menuFill: false),
+          homeFill: true, mapFill: false, placeFill: false, menuFill: false),
     );
   }
 }

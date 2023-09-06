@@ -1,4 +1,4 @@
-import 'package:a_tour_action/screens/favorite_screen.dart';
+import 'package:a_tour_action/screens/places_screen.dart';
 import 'package:a_tour_action/screens/home_screen.dart';
 import 'package:a_tour_action/screens/map_screen.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +7,11 @@ import '../screens/menu_screen.dart';
 class BottomNavigation extends StatelessWidget {
   final bool homeFill;
   final bool mapFill;
-  final bool favFill;
+  final bool placeFill;
   final bool menuFill;
   const BottomNavigation(
       {super.key,
-      required this.favFill,
+      required this.placeFill,
       required this.homeFill,
       required this.mapFill,
       required this.menuFill});
@@ -60,15 +60,15 @@ class BottomNavigation extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
-              favFill ? Icons.favorite : Icons.favorite_border_outlined,
+              placeFill ? Icons.place : Icons.place_outlined,
               color: Colors.blue,
             ),
             onPressed: () {
-              if (!favFill) {
+              if (!placeFill) {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const FavoriteScreen(),
+                    builder: (context) => const PlacesScreen(),
                   ),
                 );
               }

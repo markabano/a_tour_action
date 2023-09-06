@@ -32,20 +32,24 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                   "assets/images/${picture[index]}.jpg",
                   fit: BoxFit.cover,
                   width: 1000,
-                  height: 300,
+                  height: 200,
                 ),
               );
             },
             options: CarouselOptions(
-              height: 400,
+              height: 250,
               autoPlay: true,
               enlargeCenterPage: true,
             ),
           ),
-          const SizedBox(
-            height: 20.0,
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Text(widget.place["description"]),
+              ),
+            ),
           ),
-          Text(widget.place["description"]),
         ],
       ),
     );

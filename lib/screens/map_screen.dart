@@ -42,7 +42,7 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, mapFill: true, favFill: false, menuFill: false),
+          homeFill: false, mapFill: true, placeFill: false, menuFill: false),
     );
   }
 
