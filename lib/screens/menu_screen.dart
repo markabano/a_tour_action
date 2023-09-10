@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
@@ -28,7 +26,7 @@ class _MenuScreenState extends State<MenuScreen> {
               height: 200,
               color: Colors.lightBlue[100],
               child: Padding(
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Row(
                   children: [
                     const CircleAvatar(

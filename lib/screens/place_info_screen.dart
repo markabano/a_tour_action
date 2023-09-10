@@ -10,6 +10,8 @@ class PlaceInfoScreen extends StatefulWidget {
 }
 
 class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
+  bool isFavorite = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,6 +19,19 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         title: Text(
           widget.place["name"],
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                isFavorite = !isFavorite;
+              });
+            },
+            icon: isFavorite == true
+                ? const Icon(Icons.favorite)
+                : const Icon(Icons.favorite_border),
+            color: Colors.red,
+          ),
+        ],
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
       ),
