@@ -29,6 +29,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   carousel_slider: ^4.2.1
+  cloud_firestore: ^4.9.1
   cupertino_icons: ^1.0.2
   firebase_auth: ^4.9.0
   firebase_core: ^2.15.1
@@ -36,7 +37,6 @@ dependencies:
     sdk: flutter
   google_maps_flutter: ^2.4.0
   http: ^1.1.0
-  intl: ^0.18.1
   panorama_viewer: ^1.0.1
 
 dev_dependencies:

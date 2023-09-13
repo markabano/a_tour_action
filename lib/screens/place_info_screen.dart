@@ -1,5 +1,7 @@
 import 'package:a_tour_action/screens/screenFor_360view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class PlaceInfoScreen extends StatefulWidget {
@@ -13,6 +15,13 @@ class PlaceInfoScreen extends StatefulWidget {
 class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   bool isFavorite = false;
   bool expand = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkFavorite();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                   child: Column(
                     children: [
                       Container(
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                             border: Border(
                                 bottom: BorderSide(
                                     width: 1.0, color: Colors.blueAccent))),
@@ -61,7 +70,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                             Text(
                               widget.place["name"],
                               textAlign: TextAlign.left,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 20),
                             ),
                             IconButton(
@@ -69,6 +78,11 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                                 setState(() {
                                   isFavorite = !isFavorite;
                                 });
+                                if (isFavorite == true) {
+                                  addFavorite();
+                                } else {
+                                  removeFavorite();
+                                }
                               },
                               icon: isFavorite == true
                                   ? const Icon(Icons.favorite)
@@ -112,36 +126,39 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     OutlinedButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ScreenFor360View(),
-                              ));
-                        },
-                        child: Text('View in 360'),
-                        style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.blue,
-                            side: BorderSide(color: Colors.blue))),
-                    SizedBox(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ScreenFor360View(),
+                            ));
+                      },
+                      style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.blue,
+                          side: BorderSide(color: Colors.blue)),
+                      child: const Text('View in 360'),
+                    ),
+                    const SizedBox(
                       height: 20,
                     ),
-                    Text(
+                    const Text(
                       'OPENING & CLOSING HOURS',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    const Row(
                       children: [
                         CircleAvatar(
-                            child: Icon(Icons.access_time), radius: 15),
+                          radius: 15,
+                          child: Icon(Icons.access_time),
+                        ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                          padding: EdgeInsets.only(left: 8.0),
                           child: Text(
                             '8:00AM - 10:00PM',
                             textAlign: TextAlign.center,
@@ -186,14 +203,14 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                             ? TextOverflow.ellipsis
                             : TextOverflow.visible,
                         textAlign: TextAlign.justify,
-                        style: TextStyle(
+                        style: const TextStyle(
                             color: Colors.black87,
                             wordSpacing: 1.5,
                             height: 1.7),
                       ),
                       Text(
                         !expand ? 'Read more' : 'Read less',
-                        style: TextStyle(color: Colors.blue),
+                        style: const TextStyle(color: Colors.blue),
                       ),
                     ],
                   ),
@@ -204,5 +221,39 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> addFavorite() async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('favorites')
+        .doc(widget.place["id"].toString())
+        .set({"data": widget.place, "isFavorite": true});
+  }
+
+  Future<void> checkFavorite() async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('favorites')
+        .doc(widget.place["id"].toString())
+        .get()
+        .then((value) {
+      if (value.exists) {
+        setState(() {
+          isFavorite = true;
+        });
+      }
+    });
+  }
+
+  Future<void> removeFavorite() async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('favorites')
+        .doc(widget.place["id"].toString())
+        .delete();
   }
 }

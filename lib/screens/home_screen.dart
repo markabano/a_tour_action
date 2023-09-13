@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
@@ -123,6 +126,91 @@ class _HomeScreenState extends State<HomeScreen> {
                     : const Center(
                         child: CircularProgressIndicator(),
                       ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Favorites",
+              style: TextStyle(fontSize: 20),
+            ),
+            const SizedBox(height: 20),
+            Expanded(
+              child: StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection('favorites')
+                    .snapshots(),
+                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasData) {
+                    return ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot place = snapshot.data!.docs[index];
+
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PlaceInfoScreen(
+                                          place: place['data'],
+                                        )),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20.0),
+                                color: Colors.blue[100],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(20.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Image.network(
+                                      place['data']['pictures'][0],
+                                      width: 50,
+                                      height: 50,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Text(
+                                      place['data']['name'],
+                                      textAlign: TextAlign.left,
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          snapshot.data!.docs.removeAt(index);
+                                        });
+                                        FirebaseFirestore.instance
+                                            .collection('users')
+                                            .doc(FirebaseAuth
+                                                .instance.currentUser!.uid)
+                                            .collection('favorites')
+                                            .doc(place.id)
+                                            .delete();
+                                      },
+                                      icon: const Icon(Icons.delete),
+                                      color: Colors.red,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
               ),
             ),
           ],

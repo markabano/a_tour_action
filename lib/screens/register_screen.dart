@@ -1,3 +1,5 @@
+import 'package:a_tour_action/screens/home_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/customTextField.dart';
@@ -125,13 +127,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     }
 
-    //Register user
+    //Create User
     else {
+      //Register user
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-              email: emailController.text, password: passwordController.text)
-          .then((value) => Navigator.of(context).pop())
-          .catchError(
+        email: emailController.text,
+        password: passwordController.text,
+      )
+          .then((value) async {
+        //Add user details to firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(value.user!.uid)
+            .set({
+          'name': nameController.text,
+          'email': emailController.text,
+          'uid': value.user!.uid,
+        });
+
+        //Navigate to home screen
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const HomeScreen(),
+          ),
+        );
+      }).catchError(
         (error) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

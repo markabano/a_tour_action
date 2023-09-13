@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
@@ -12,7 +13,15 @@ class MenuScreen extends StatefulWidget {
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  final name = FirebaseAuth.instance.currentUser!.email!.split('@')[0];
+  String name = '';
+  bool isLoaded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,26 +36,28 @@ class _MenuScreenState extends State<MenuScreen> {
               color: Colors.lightBlue[100],
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 50,
-                      child: Icon(
-                        Icons.person,
-                        size: 100,
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
+                child: isLoaded
+                    ? Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 50,
+                            child: Icon(
+                              Icons.person,
+                              size: 100,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Text(
+                            name,
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                        ],
+                      )
+                    : const Center(child: CircularProgressIndicator()),
               ),
             ),
             const SizedBox(height: 10),
@@ -109,5 +120,19 @@ class _MenuScreenState extends State<MenuScreen> {
         builder: (context) => AuthPage(),
       ),
     );
+  }
+
+  Future<void> getUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
+
+    name = userData.data()!['name'];
+
+    setState(() {
+      isLoaded = true;
+    });
   }
 }
