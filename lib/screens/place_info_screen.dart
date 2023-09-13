@@ -88,8 +88,8 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                   return Center(
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        "assets/images/${picture[index]}.jpg",
+                      child: Image.network(
+                        picture[index],
                         fit: BoxFit.cover,
                         width: 1000,
                         height: 200,
@@ -111,24 +111,31 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    OutlinedButton(onPressed: (){
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => ScreenFor360View(),));
-                    }, child: Text('View in 360'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.blue,
-                      side: BorderSide(
-                        color: Colors.blue
-                      )
-                    )
+                    OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ScreenFor360View(),
+                              ));
+                        },
+                        child: Text('View in 360'),
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: BorderSide(color: Colors.blue))),
+                    SizedBox(
+                      height: 20,
                     ),
-                    SizedBox(height: 20,),
-                    Text('OPENING & CLOSING HOURS',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                    Text(
+                      'OPENING & CLOSING HOURS',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
+                    SizedBox(
+                      height: 20,
                     ),
-                    SizedBox(height: 20,),
                     Row(
                       children: [
                         CircleAvatar(

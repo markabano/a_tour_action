@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
-import 'auth_page.dart';
+import '../auth_page.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
