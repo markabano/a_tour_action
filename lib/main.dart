@@ -17,6 +17,9 @@ class ATourAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Color.fromARGB(255, 70, 159, 209), // Set the primary color here
+      ),
       home: AuthPage(),
       debugShowCheckedModeBanner: false,
     );

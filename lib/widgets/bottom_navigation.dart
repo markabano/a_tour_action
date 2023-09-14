@@ -29,7 +29,7 @@ class BottomNavigation extends StatelessWidget {
           IconButton(
             icon: Icon(
               homeFill ? Icons.home_filled : Icons.home_outlined,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 70, 159, 209)
             ),
             onPressed: () {
               if (!homeFill) {
@@ -45,7 +45,7 @@ class BottomNavigation extends StatelessWidget {
           IconButton(
             icon: Icon(
               mapFill ? Icons.map_sharp : Icons.map_outlined,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 70, 159, 209),
             ),
             onPressed: () {
               if (!mapFill) {
@@ -61,7 +61,7 @@ class BottomNavigation extends StatelessWidget {
           IconButton(
             icon: Icon(
               placeFill ? Icons.place : Icons.place_outlined,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 70, 159, 209),
             ),
             onPressed: () {
               if (!placeFill) {
@@ -77,7 +77,7 @@ class BottomNavigation extends StatelessWidget {
           IconButton(
             icon: Icon(
               menuFill ? Icons.menu_open : Icons.menu_outlined,
-              color: Colors.blue,
+              color: Color.fromARGB(255, 70, 159, 209),
             ),
             onPressed: () {
               if (!menuFill) {

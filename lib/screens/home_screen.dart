@@ -7,6 +7,7 @@ import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
 import 'package:http/http.dart' as http;
 
+// import 'package:carousel_slider/carousel_slider.dart';
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -24,6 +25,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String icon = '';
   bool isLoading = false;
 
+  var favorites = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('favorites')
+      .snapshots();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -36,11 +43,85 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: SafeArea(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Color.fromARGB(
+                            255, 206, 206, 206), // White border color
+                        width: 3.0, // Border width
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                      child: Icon(Icons.person),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Good Morning!",
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        //  SizedBox(height: 5,),
+                        Row(
+                          children: [
+                            Text(
+                              "Hi,",
+                              style: TextStyle(
+                                fontSize: 17,
+                              ),
+                            ),
+                            Text(
+                              " " + "Badua",
+                              style: TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              // color: Colors.amber,
+              height: 90,
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                      hintText: 'Search',
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ))),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft:
+                      Radius.circular(25.0), // Adjust the radius as needed
+                  bottomRight:
+                      Radius.circular(25.0), // Adjust the radius as needed
+                ),
+                color: const Color.fromARGB(255, 70, 159, 209),
+              ),
               width: double.infinity,
               height: 200,
-              color: Colors.blue,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: isLoading == true
@@ -128,26 +209,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              "Favorites",
-              style: TextStyle(fontSize: 20),
+            StreamBuilder(
+              stream: favorites,
+              builder: (context, snapshot) {
+                if (snapshot.data?.docs.length != 0) {
+                  return Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: const Text(
+                      "Favorites",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  );
+                }
+                return Text('');
+              },
             ),
-            const SizedBox(height: 20),
             Expanded(
               child: StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection('favorites')
-                    .snapshots(),
+                stream: favorites,
                 builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.hasData) {
                     return ListView.builder(
+                      scrollDirection: Axis
+                          .horizontal, // Set the scroll direction to horizontal
                       itemCount: snapshot.data!.docs.length,
                       itemBuilder: (context, index) {
                         DocumentSnapshot place = snapshot.data!.docs[index];
-
                         return Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: GestureDetector(
@@ -155,50 +242,109 @@ class _HomeScreenState extends State<HomeScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => PlaceInfoScreen(
-                                          place: place['data'],
-                                        )),
+                                  builder: (context) => PlaceInfoScreen(
+                                    place: place['data'],
+                                  ),
+                                ),
                               );
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: Colors.blue[100],
+                            child: Card(
+                              elevation: 4, // Add shadow to the card
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Image.network(
-                                      place['data']['pictures'][0],
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        // Larger image on the left
+                                        Container(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 8, 8, 8),
+                                          child: AspectRatio(
+                                            aspectRatio: 1,
+                                            child: Image.network(
+                                              place['data']['pictures'][0],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        // Two stacked images on the right
+                                        Column(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 8, 0, 4),
+                                              child: Image.network(
+                                                place['data']['pictures'][1],
+                                                width: 75,
+                                                height: 75,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      0, 4, 0, 4),
+                                              child: Image.network(
+                                                place['data']['pictures'][2],
+                                                width: 75,
+                                                height: 75,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        //4-5
+                                        Column(
+                                          children: [
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8, 8, 0, 4),
+                                              child: Image.network(
+                                                place['data']['pictures'][3],
+                                                width: 75,
+                                                height: 75,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      8, 4, 0, 4),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                              ),
+                                              child: Image.network(
+                                                place['data']['pictures'][4],
+                                                width: 75,
+                                                height: 75,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
-                                    Text(
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        18, 10, 10, 10),
+                                    child: Text(
                                       place['data']['name'],
                                       textAlign: TextAlign.left,
+                                      style: TextStyle(fontSize: 18),
                                     ),
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          snapshot.data!.docs.removeAt(index);
-                                        });
-                                        FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
-                                            .collection('favorites')
-                                            .doc(place.id)
-                                            .delete();
-                                      },
-                                      icon: const Icon(Icons.delete),
-                                      color: Colors.red,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),

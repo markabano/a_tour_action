@@ -8,6 +8,7 @@ class Camera extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
+      backgroundColor: Color.fromARGB(255, 70, 159, 209),
       onPressed: () {},
       child: const Icon(Icons.camera_alt_outlined),
     );
