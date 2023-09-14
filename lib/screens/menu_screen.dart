@@ -1,3 +1,4 @@
+import 'package:a_tour_action/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           Text(
                             name,
                             style: TextStyle(
-                              fontSize: 30,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey[700],
                             ),
@@ -61,11 +62,19 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            const Card(
-              child: ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Profile'),
-                trailing: const Icon(Icons.arrow_forward_ios),
+            GestureDetector(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfileScreen(),
+                ),
+              ),
+              child: const Card(
+                child: ListTile(
+                  leading: const Icon(Icons.person),
+                  title: const Text('Profile'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                ),
               ),
             ),
             const Card(
