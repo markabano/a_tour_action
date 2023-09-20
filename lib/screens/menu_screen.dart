@@ -15,6 +15,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   String name = '';
+  String _imageUrl = '';
   bool isLoaded = false;
 
   @override
@@ -40,13 +41,18 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: isLoaded
                     ? Row(
                         children: [
-                          const CircleAvatar(
-                            radius: 50,
-                            child: Icon(
-                              Icons.person,
-                              size: 100,
-                            ),
-                          ),
+                          _imageUrl.isNotEmpty
+                              ? CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: NetworkImage(_imageUrl),
+                                )
+                              : const CircleAvatar(
+                                  radius: 50,
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 100,
+                                  ),
+                                ),
                           const SizedBox(width: 20),
                           Text(
                             name,
@@ -132,6 +138,7 @@ class _MenuScreenState extends State<MenuScreen> {
         .get();
 
     name = userData.data()!['name'];
+    _imageUrl = userData.data()!['imageUrl'];
 
     setState(() {
       isLoaded = true;
