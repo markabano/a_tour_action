@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
 import 'package:http/http.dart' as http;
+import 'package:card_swiper/card_swiper.dart';
 
 // import 'package:carousel_slider/carousel_slider.dart';
 class HomeScreen extends StatefulWidget {
@@ -44,164 +45,166 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Color.fromARGB(
-                            255, 206, 206, 206), // White border color
-                        width: 3.0, // Border width
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Color.fromARGB(
+                              255, 206, 206, 206), // White border color
+                          width: 3.0, // Border width
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                        child: Icon(Icons.person),
                       ),
                     ),
-                    child: CircleAvatar(
-                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                      child: Icon(Icons.person),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Hello!",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          name,
-                          style: const TextStyle(
-                              fontSize: 17, fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  bottomLeft:
-                      Radius.circular(25.0), // Adjust the radius as needed
-                  bottomRight:
-                      Radius.circular(25.0), // Adjust the radius as needed
-                ),
-                color: const Color.fromARGB(255, 70, 159, 209),
-              ),
-              width: double.infinity,
-              height: 200,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: isLoading == true
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 20),
-                              const Text(
-                                'Baguio City',
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                '$temperature°C',
-                                style: const TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                main,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                description,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
+                          const Text(
+                            "Hello!",
+                            style: TextStyle(color: Colors.grey),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    getWeather();
-                                  },
-                                  icon: const Icon(
-                                    Icons.refresh,
-                                    color: Colors.white,
-                                  )),
-                              Image.network(
-                                'https://openweathermap.org/img/wn/$icon.png',
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
-                              Row(
-                                children: [
-                                  const Icon(Icons.water_drop,
-                                      color: Colors.white),
-                                  Text(
-                                    '$humidity%',
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              )
-                            ],
+                          Text(
+                            name,
+                            style: const TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.bold),
                           )
                         ],
-                      )
-                    : const Center(
-                        child: CircularProgressIndicator(),
                       ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: Text('Favorites', style: TextStyle(fontSize: 20)),
-            ),
-            Expanded(
-              child: StreamBuilder(
-                stream: favorites,
-                builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      scrollDirection: Axis
-                          .horizontal, // Set the scroll direction to horizontal
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot place = snapshot.data!.docs[index];
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: GestureDetector(
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft:
+                        Radius.circular(25.0), // Adjust the radius as needed
+                    bottomRight:
+                        Radius.circular(25.0), // Adjust the radius as needed
+                  ),
+                  color: const Color.fromARGB(255, 70, 159, 209),
+                ),
+                width: double.infinity,
+                height: 200,
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: isLoading == true
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text(
+                                  'Baguio City',
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  '$temperature°C',
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  main,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  description,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                      getWeather();
+                                    },
+                                    icon: const Icon(
+                                      Icons.refresh,
+                                      color: Colors.white,
+                                    )),
+                                Image.network(
+                                  'https://openweathermap.org/img/wn/$icon.png',
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                ),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.water_drop,
+                                        color: Colors.white),
+                                    Text(
+                                      '$humidity%',
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
+                        )
+                      : const Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Text('Favorites', style: TextStyle(fontSize: 20)),
+              ),
+              Container(
+                width: double.infinity,
+                height: 200,
+                child: StreamBuilder(
+                  stream: favorites,
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis
+                            .horizontal, // Set the scroll direction to horizontal
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot place = snapshot.data!.docs[index];
+                          return GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -215,115 +218,194 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Card(
                               elevation: 4, // Add shadow to the card
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
+                                borderRadius: BorderRadius.circular(10.0),
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    child: Row(
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                width: MediaQuery.of(context).size.width * .70,
+                                // height: MediaQuery.of(context).size.height * .10,
+                                // height: 300,
+        
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          MainAxisAlignment.spaceAround,
                                       children: [
-                                        // Larger image on the left
-                                        Container(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              0, 8, 8, 8),
-                                          child: AspectRatio(
-                                            aspectRatio: 1,
-                                            child: Image.network(
-                                              place['data']['pictures'][0],
-                                              fit: BoxFit.cover,
-                                            ),
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5),
+                                          child: Image.network(
+                                            place['data']['pictures'][0],
+                                            height: 150,
+                                            width: 150,
+                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                        // Two stacked images on the right
                                         Column(
+                                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 8, 0, 4),
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][1],
-                                                width: 75,
-                                                height: 75,
+                                                height: 70,
+                                                width: 100,
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      0, 4, 0, 4),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][2],
-                                                width: 75,
-                                                height: 75,
+                                                height: 70,
+                                                width: 100,
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
                                           ],
-                                        ),
-
-                                        //4-5
-                                        Column(
-                                          children: [
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 8, 0, 4),
-                                              child: Image.network(
-                                                place['data']['pictures'][3],
-                                                width: 75,
-                                                height: 75,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            Container(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 4, 0, 4),
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                              ),
-                                              child: Image.network(
-                                                place['data']['pictures'][4],
-                                                width: 75,
-                                                height: 75,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
+                                        )
                                       ],
                                     ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        18, 10, 10, 10),
-                                    child: Text(
-                                      place['data']['name'],
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(fontSize: 18),
+                                     const SizedBox(
+                                              height: 5,
+                                            ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:8.0),
+                                      child: Text(
+                                        place['data']['name'],
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                },
+                          );
+                        },
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-          ],
+              const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Text('Featured Locations', style: TextStyle(fontSize: 20)),
+              ),
+              Container(
+                width: double.infinity,
+                height: 200,
+                child: StreamBuilder(
+                  stream: favorites,
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        scrollDirection: Axis
+                            .horizontal, // Set the scroll direction to horizontal
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot place = snapshot.data!.docs[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlaceInfoScreen(
+                                    place: place['data'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              elevation: 4, // Add shadow to the card
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                width: MediaQuery.of(context).size.width * .70,
+                                // height: MediaQuery.of(context).size.height * .10,
+                                // height: 300,
+        
+                                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(5),
+                                          child: Image.network(
+                                            place['data']['pictures'][0],
+                                            height: 150,
+                                            width: 150,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        Column(
+                                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: Image.network(
+                                                place['data']['pictures'][1],
+                                                height: 70,
+                                                width: 100,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: Image.network(
+                                                place['data']['pictures'][2],
+                                                height: 70,
+                                                width: 100,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                     const SizedBox(
+                                              height: 5,
+                                            ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left:8.0),
+                                      child: Text(
+                                        place['data']['name'],
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 18),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
