@@ -23,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String main = '';
   String description = '';
   String icon = '';
+  String name = '';
   bool isLoading = false;
 
   var favorites = FirebaseFirestore.instance
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
     super.initState();
     getWeather();
+    getUserData();
   }
 
   @override
@@ -64,51 +66,24 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(10),
+                    padding: const EdgeInsets.all(10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Good Morning!",
+                        const Text(
+                          "Hello!",
                           style: TextStyle(color: Colors.grey),
                         ),
-                        //  SizedBox(height: 5,),
-                        Row(
-                          children: [
-                            Text(
-                              "Hi,",
-                              style: TextStyle(
-                                fontSize: 17,
-                              ),
-                            ),
-                            Text(
-                              " " + "Badua",
-                              style: TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.bold),
-                            )
-                          ],
+                        Text(
+                          name,
+                          style: const TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold),
                         )
                       ],
                     ),
                   )
                 ],
               ),
-            ),
-            Container(
-              // color: Colors.amber,
-              height: 90,
-              padding: const EdgeInsets.all(20),
-              child: TextField(
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: InputDecoration(
-                      hintText: 'Search',
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.black,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ))),
             ),
             Container(
               decoration: BoxDecoration(
@@ -209,20 +184,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
               ),
             ),
-            StreamBuilder(
-              stream: favorites,
-              builder: (context, snapshot) {
-                if (snapshot.data?.docs.length != 0) {
-                  return Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: const Text(
-                      "Favorites",
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  );
-                }
-                return Text('');
-              },
+            const Padding(
+              padding: EdgeInsets.all(12.0),
+              child: Text('Favorites', style: TextStyle(fontSize: 20)),
             ),
             Expanded(
               child: StreamBuilder(
@@ -390,5 +354,15 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
+  }
+
+  Future<void> getUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userData = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user!.uid)
+        .get();
+
+    name = userData.data()!['name'];
   }
 }

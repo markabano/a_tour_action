@@ -79,13 +79,6 @@ class _MenuScreenState extends State<MenuScreen> {
             ),
             const Card(
               child: ListTile(
-                leading: const Icon(Icons.settings),
-                title: const Text('Settings'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-              ),
-            ),
-            const Card(
-              child: ListTile(
                 leading: const Icon(Icons.info),
                 title: const Text('About'),
                 trailing: const Icon(Icons.arrow_forward_ios),

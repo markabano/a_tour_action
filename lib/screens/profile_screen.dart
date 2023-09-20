@@ -2,6 +2,7 @@ import 'package:a_tour_action/auth_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -66,17 +67,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
         padding: const EdgeInsets.all(12.0),
         child: SingleChildScrollView(
           child: Column(children: [
-            CircleAvatar(
-              radius: 50,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.person,
-                    size: 50,
-                  ),
-                  Text('Edit'),
-                ],
+            GestureDetector(
+              onTap: () {},
+              child: CircleAvatar(
+                radius: 50,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.person,
+                      size: 50,
+                    ),
+                    Text('Edit'),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 20),

@@ -30,6 +30,21 @@ class _PlacesScreenState extends State<PlacesScreen> {
       body: SafeArea(
         child: Column(
           children: [
+            Container(
+              height: 90,
+              padding: const EdgeInsets.all(20),
+              child: TextField(
+                  textAlignVertical: TextAlignVertical.center,
+                  decoration: InputDecoration(
+                      hintText: 'Search',
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: Colors.black,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ))),
+            ),
             if (isLoading)
               Expanded(
                 child: ListView.builder(
@@ -48,7 +63,12 @@ class _PlacesScreenState extends State<PlacesScreen> {
                       child: Card(
                         elevation: 3,
                         child: ListTile(
-                          leading: const Icon(Icons.place),
+                          leading: Image.network(
+                            placeToPass[index]["pictures"][0],
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
                           title: Text(places[index]),
                           trailing: const Icon(Icons.arrow_forward_ios),
                         ),
