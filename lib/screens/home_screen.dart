@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String description = '';
   String icon = '';
   String name = '';
+  String _imageUrl = '';
   bool isLoading = false;
 
   var favorites = FirebaseFirestore.instance
@@ -63,8 +64,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       child: CircleAvatar(
-                        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-                        child: Icon(Icons.person),
+                        backgroundColor:
+                            const Color.fromARGB(255, 255, 255, 255),
+                        child: _imageUrl.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 50,
+                                backgroundImage: NetworkImage(_imageUrl),
+                              )
+                            : const CircleAvatar(
+                                radius: 50,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 100,
+                                ),
+                              ),
                       ),
                     ),
                     Container(
@@ -225,15 +238,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: MediaQuery.of(context).size.width * .70,
                                 // height: MediaQuery.of(context).size.height * .10,
                                 // height: 300,
-        
-                                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(5),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
                                           child: Image.network(
                                             place['data']['pictures'][0],
                                             height: 150,
@@ -245,7 +260,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
                                             ClipRRect(
-                                              borderRadius: BorderRadius.circular(5),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][1],
                                                 height: 70,
@@ -257,7 +273,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 5,
                                             ),
                                             ClipRRect(
-                                              borderRadius: BorderRadius.circular(5),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][2],
                                                 height: 70,
@@ -269,11 +286,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         )
                                       ],
                                     ),
-                                     const SizedBox(
-                                              height: 5,
-                                            ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left:8.0),
+                                      padding: const EdgeInsets.only(left: 8.0),
                                       child: Text(
                                         place['data']['name'],
                                         textAlign: TextAlign.left,
@@ -297,7 +314,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const Padding(
                 padding: EdgeInsets.all(12.0),
-                child: Text('Featured Locations', style: TextStyle(fontSize: 20)),
+                child:
+                    Text('Featured Locations', style: TextStyle(fontSize: 20)),
               ),
               Container(
                 width: double.infinity,
@@ -334,15 +352,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 width: MediaQuery.of(context).size.width * .70,
                                 // height: MediaQuery.of(context).size.height * .10,
                                 // height: 300,
-        
-                                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(5),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
                                           child: Image.network(
                                             place['data']['pictures'][0],
                                             height: 150,
@@ -354,7 +374,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
                                             ClipRRect(
-                                              borderRadius: BorderRadius.circular(5),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][1],
                                                 height: 70,
@@ -366,7 +387,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 5,
                                             ),
                                             ClipRRect(
-                                              borderRadius: BorderRadius.circular(5),
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
                                               child: Image.network(
                                                 place['data']['pictures'][2],
                                                 height: 70,
@@ -378,11 +400,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         )
                                       ],
                                     ),
-                                     const SizedBox(
-                                              height: 5,
-                                            ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.only(left:8.0),
+                                      padding: const EdgeInsets.only(left: 8.0),
                                       child: Text(
                                         place['data']['name'],
                                         textAlign: TextAlign.left,
@@ -446,5 +468,10 @@ class _HomeScreenState extends State<HomeScreen> {
         .get();
 
     name = userData.data()!['name'];
+    if (userData.data()?['imageUrl'] != null) {
+      _imageUrl = userData.data()?['imageUrl'];
+    } else {
+      _imageUrl = '';
+    }
   }
 }
