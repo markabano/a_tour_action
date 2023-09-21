@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
@@ -14,14 +14,9 @@ class PlacesScreen extends StatefulWidget {
 class _PlacesScreenState extends State<PlacesScreen> {
   List<String> places = [];
   List placeToPass = [];
-  bool isLoading = false;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    getPlaces();
-  }
+  var firebasePlaces =
+      FirebaseFirestore.instance.collection('places').snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -45,42 +40,89 @@ class _PlacesScreenState extends State<PlacesScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ))),
             ),
-            if (isLoading)
-              Expanded(
-                child: ListView.builder(
-                  itemCount: places.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                PlaceInfoScreen(place: placeToPass[index]),
+            StreamBuilder(
+              stream: firebasePlaces,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.docs.length,
+                      itemBuilder: (context, index) {
+                        DocumentSnapshot place = snapshot.data!.docs[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    PlaceInfoScreen(place: place.data()),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 80,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    image: DecorationImage(
+                                      image: NetworkImage(
+                                        place['pictures'][0],
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        place['name'],
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1, // Limit to one line
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        place['description'],
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 2, // Limit to two lines
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         );
                       },
-                      child: Card(
-                        elevation: 3,
-                        child: ListTile(
-                          leading: Image.network(
-                            placeToPass[index]["pictures"][0],
-                            width: 100,
-                            height: 100,
-                            fit: BoxFit.cover,
-                          ),
-                          title: Text(places[index]),
-                          trailing: const Icon(Icons.arrow_forward_ios),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              )
-            else
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
+                    ),
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              },
+            )
           ],
         ),
       ),
@@ -89,19 +131,5 @@ class _PlacesScreenState extends State<PlacesScreen> {
       bottomNavigationBar: BottomNavigation(
           homeFill: false, mapFill: false, placeFill: true, menuFill: false),
     );
-  }
-
-  Future<void> getPlaces() async {
-    var response = await DefaultAssetBundle.of(context)
-        .loadString('assets/json/places.json');
-    var decodedResponse = jsonDecode(response);
-    for (var eachplace in decodedResponse["data"]) {
-      places.add(eachplace["name"]);
-      placeToPass.add(eachplace);
-
-      setState(() {
-        isLoading = true;
-      });
-    }
   }
 }
