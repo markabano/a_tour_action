@@ -138,7 +138,11 @@ class _MenuScreenState extends State<MenuScreen> {
         .get();
 
     name = userData.data()!['name'];
-    _imageUrl = userData.data()!['imageUrl'];
+    if (userData.data()?['imageUrl'] != null) {
+      _imageUrl = userData.data()?['imageUrl'];
+    } else {
+      _imageUrl = '';
+    }
 
     setState(() {
       isLoaded = true;

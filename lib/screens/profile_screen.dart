@@ -239,6 +239,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         FirebaseStorage.instance.ref().child('user_images').child(fileName);
 
     try {
+      //delete previous image
+      if (userImgUrl != '') {
+        await FirebaseStorage.instance.refFromURL(userImgUrl).delete();
+      }
+
       //store file in firebase
       await ref.putFile(File(pickedImage.path));
 
