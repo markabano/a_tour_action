@@ -20,13 +20,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue[100],
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
+        child: SingleChildScrollView(
+          child: Container(
+            height: 745,
+          // padding: const EdgeInsets.all(12.0),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.contain,
+              image: AssetImage('assets/images/image 11.jpg'),
+              alignment: Alignment.bottomCenter,
+              opacity: 0.8,
+            ),
+          ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const SizedBox(height: 25),
                 Text(
                   'A Tour Action',
                   style: TextStyle(
@@ -34,13 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[700],
                   ),
-                ),
-                const SizedBox(height: 50),
-                const Icon(
-                  Icons.app_registration_outlined,
-                  size: 100,
-                ),
-                const SizedBox(height: 50),
+                ),            
+                const SizedBox(height: 25),
                 Text(
                   'Register',
                   style: TextStyle(
@@ -99,7 +105,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           )),
                     ),
                   ],
-                )
+                ),
+                Expanded(
+                  child: Stack(
+                    fit: StackFit.expand,
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 100,
+                        height: 200,
+                        color: Colors.blue, 
+
+                      child: ClipPath(
+                        clipper: ClipClipper(),
+                        child: Container(
+                          width: 100,
+                          height: 250,
+                          decoration: const BoxDecoration(
+            image: DecorationImage(
+              fit: BoxFit.contain,
+              image: AssetImage('assets/images/image 11.jpg'),
+              alignment: Alignment.bottomCenter,
+              opacity: 0.8,
+            ),
+          ),
+                        ),
+                      ),
+                    ),
+  ]
+                  ),
+                ),
               ],
             ),
           ),
@@ -164,3 +199,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 }
+
+class ClipClipper extends CustomClipper<Path> {
+  
+    @override
+    Path getClip(Size size) {
+
+      Path path=Path();
+
+      // path.lineTo(0, size.height);
+      // path.lineTo(size.width, size.height);
+      // path.quadraticBezierTo(0, size.height , 0, 0);
+      path.moveTo(0, 0); // Move to the top-left corner
+      path.lineTo(0, size.height / 2); // Line to the left side of the semi-circle
+      path.quadraticBezierTo(
+      size.width / 2, size.height, size.width, size.height / 2); // Create the upside-down semi-circle
+      path.lineTo(size.width, 0); // Line to the top-right corner
+      path.close(); // Close the path to complete the clip shape
+      
+      return path;
+    }
+  
+    @override
+    bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+  }
