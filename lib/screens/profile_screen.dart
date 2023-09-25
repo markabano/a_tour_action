@@ -27,6 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userImgUrl = '';
   Uint8List? _imageFile;
   XFile? _pickedImage;
+  ImageSource? source;
 
   bool _isLoaded = false;
 
@@ -214,10 +215,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> pickImage() async {
+    //camera or gallery
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheet(
+        onClosing: () {},
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('Camera'),
+              onTap: () {
+                Navigator.pop(context);
+                source = ImageSource.camera;
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text('Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                source = ImageSource.gallery;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
     //Pick an image
     ImagePicker imagePicker = ImagePicker();
-    XFile? pickedImage =
-        await imagePicker.pickImage(source: ImageSource.camera);
+    XFile? pickedImage = await imagePicker.pickImage(source: source!);
 
     //Convert to bytes
     if (pickedImage != null) {
