@@ -235,16 +235,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: Container(
                                 padding: const EdgeInsets.all(8),
-                                width: MediaQuery.of(context).size.width * .70,
+                                width: MediaQuery.of(context).size.width * .78,
                                 // height: MediaQuery.of(context).size.height * .10,
                                 // height: 300,
 
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  
                                   children: [
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         ClipRRect(
                                           borderRadius:
@@ -257,7 +258,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         ),
                                         Column(
-                                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                          // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             ClipRRect(
                                               borderRadius:
@@ -270,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                             const SizedBox(
-                                              height: 5,
+                                              height: 10,
                                             ),
                                             ClipRRect(
                                               borderRadius:
@@ -349,7 +350,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               child: Container(
                                 padding: const EdgeInsets.all(8),
-                                width: MediaQuery.of(context).size.width * .70,
+                                width: MediaQuery.of(context).size.width * .78,
                                 // height: MediaQuery.of(context).size.height * .10,
                                 // height: 300,
 
