@@ -4,7 +4,6 @@ import 'package:a_tour_action/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/menu_screen.dart';
 
-
 class BottomNavigation extends StatelessWidget {
   final bool homeFill;
   final bool mapFill;
@@ -28,10 +27,8 @@ class BottomNavigation extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            icon: Icon(
-              homeFill ? Icons.home_filled : Icons.home_outlined,
-              color: Color.fromARGB(255, 70, 159, 209)
-            ),
+            icon: Icon(homeFill ? Icons.home_filled : Icons.home_outlined,
+                color: Color.fromARGB(255, 70, 159, 209)),
             onPressed: () {
               if (!homeFill) {
                 Navigator.pushReplacement(
@@ -85,7 +82,7 @@ class BottomNavigation extends StatelessWidget {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MenuScreen(),
+                    builder: (context) => MenuScreen(),
                   ),
                 );
               }

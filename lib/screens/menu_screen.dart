@@ -8,8 +8,8 @@ import '../widgets/camera.dart';
 import '../auth_page.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
-
+  MenuScreen({super.key, this.isLoaded = false});
+  bool isLoaded;
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -17,7 +17,6 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   String name = '';
   String _imageUrl = '';
-  bool isLoaded = false;
 
   @override
   void initState() {
@@ -39,7 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
               color: Color.fromARGB(255, 249, 249, 249),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: isLoaded
+                child: widget.isLoaded
                     ? Row(
                         children: [
                           Card(
@@ -192,7 +191,7 @@ class _MenuScreenState extends State<MenuScreen> {
     }
 
     setState(() {
-      isLoaded = true;
+      widget.isLoaded = true;
     });
   }
 }
