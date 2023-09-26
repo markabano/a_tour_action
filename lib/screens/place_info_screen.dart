@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:a_tour_action/screens/screenFor_360view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class PlaceInfoScreen extends StatefulWidget {
   const PlaceInfoScreen({super.key, required this.place});
@@ -15,39 +17,49 @@ class PlaceInfoScreen extends StatefulWidget {
 class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   bool isFavorite = false;
   bool expand = false;
+  final reviewController = TextEditingController();
+
+  int pageSize = 5;
+  int currentPage = 1;
+  DocumentSnapshot? lastReview; // Store the last visible review
+
+  double rating = 0.0;
+  double userRating = 0.0;
+
+  final StreamController<List<DocumentSnapshot>> _reviewsStreamController =
+      StreamController<List<DocumentSnapshot>>();
+  final List<DocumentSnapshot> _allReviews = []; // List to store all reviews
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     checkFavorite();
+    loadReviews();
+    hasUserReviewed();
+
+    // Fetch the user's previous rating from Firestore
+    fetchUserRating().then((double? fetchedRating) {
+      if (fetchedRating != null) {
+        setState(() {
+          userRating = fetchedRating;
+          rating =
+              userRating; // Set the rating variable to the user's previous rating
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _reviewsStreamController.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: Text(
-        //     widget.place["name"],
-        //     textAlign: TextAlign.left,
-        //   ),
-        //   actions: [
-        //     IconButton(
-        //       onPressed: () {
-        //         setState(() {
-        //           isFavorite = !isFavorite;
-        //         });
-        //       },
-        //       icon: isFavorite == true
-        //           ? const Icon(Icons.favorite)
-        //           : const Icon(Icons.favorite_border),
-        //       color: Colors.red,
-        //     ),
-        //   ],
-        //   // centerTitle: true,
-        //   backgroundColor:  Colors.blue[100],
-        // ),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,18 +188,6 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                // child: ReadMoreText(
-                //   widget.place["description"],
-                //   textAlign: TextAlign.justify,
-                //   style: TextStyle(
-                //       color: Colors.black54, wordSpacing: 2.5, height: 1.5),
-                //   trimLines: 4,
-                //   colorClickableText: Colors.pink,
-                //   trimMode: TrimMode.Line,
-                //   trimCollapsedText: 'Read more',
-                //   trimExpandedText: 'Show less',
-
-                // ),
                 child: GestureDetector(
                   onTap: () {
                     setState(() {
@@ -215,6 +215,143 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                       ),
                     ],
                   ),
+                ),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.blue[100]),
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      ' My Review',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 200,
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: reviewController,
+                              decoration: const InputDecoration(
+                                hintText: 'Write a review',
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                RatingBar.builder(
+                                  initialRating: rating,
+                                  minRating: 1,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: true,
+                                  itemCount: 5,
+                                  itemSize: 40.0,
+                                  itemPadding:
+                                      EdgeInsets.symmetric(horizontal: 4.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  onRatingUpdate: onRatingChanged,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (reviewController.text.isNotEmpty) {
+                                      addReview();
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.blue,
+                                    onPrimary: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(32.0),
+                                    ),
+                                  ),
+                                  child: reviewController.text.isNotEmpty
+                                      ? const Text('Update')
+                                      : const Text('Submit'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      'Reviews',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    StreamBuilder<List<DocumentSnapshot>>(
+                      stream: _reviewsStreamController.stream,
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Text('No reviews yet.');
+                        }
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            final review = snapshot.data![index];
+                            return ListTile(
+                              leading: CircleAvatar(
+                                child: Icon(Icons.person),
+                              ),
+                              title: Text(review['reviewerName']),
+                              subtitle: Text(review['reviewText']),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: currentPage > 1 ? previousPage : null,
+                            icon: Icon(Icons.arrow_left),
+                          ),
+                          Text(
+                            'Page $currentPage',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          IconButton(
+                            onPressed: _allReviews.length % pageSize == 0
+                                ? nextPage
+                                : null,
+                            icon: Icon(Icons.arrow_right),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -256,5 +393,173 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         .collection('favorites')
         .doc(widget.place["id"].toString())
         .delete();
+  }
+
+  Future<void> addReview() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    // Check if the user has already reviewed the place
+    final hasReviewed = await hasUserReviewed();
+
+    if (hasReviewed) {
+      // User has already reviewed the place, update the existing review
+      final existingReviewQuery = await FirebaseFirestore.instance
+          .collection('reviews')
+          .where('userId', isEqualTo: userId)
+          .where('placeId', isEqualTo: widget.place["id"].toString())
+          .limit(1)
+          .get();
+
+      if (existingReviewQuery.docs.isNotEmpty) {
+        final existingReviewDoc = existingReviewQuery.docs.first;
+        await existingReviewDoc.reference.update({
+          'reviewText': reviewController.text,
+          'rating': rating,
+        });
+      }
+    } else {
+      // User is submitting a new review
+      final userData = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      final reviewData = {
+        'userId': userId,
+        'placeId': widget.place["id"].toString(),
+        'reviewerName': userData['name'],
+        'reviewText': reviewController.text,
+        'rating': rating,
+        'timestamp': FieldValue.serverTimestamp(),
+      };
+
+      await FirebaseFirestore.instance.collection('reviews').add(reviewData);
+    }
+
+    // Add/update the user's rating in Firestore
+    await FirebaseFirestore.instance
+        .collection('user_ratings')
+        .doc(userId)
+        .collection('ratings')
+        .doc(widget.place["id"].toString())
+        .set({'rating': rating});
+
+    // Fetch and update the user's previous rating
+    fetchUserRating().then((double? fetchedRating) {
+      if (fetchedRating != null) {
+        setState(() {
+          userRating = fetchedRating;
+          rating =
+              userRating; // Set the rating variable to the user's previous rating
+        });
+      }
+    });
+
+    // Add the new review to the _allReviews list
+    final newReview = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .where('placeId', isEqualTo: widget.place["id"].toString())
+        .orderBy('timestamp', descending: true)
+        .limit(1)
+        .get();
+
+    if (newReview.docs.isNotEmpty) {
+      _allReviews.insert(0, newReview.docs.first);
+    }
+
+    // Clear the text field
+    reviewController.clear();
+
+    // Update the stream with the updated _allReviews list
+    _reviewsStreamController.add(_allReviews);
+  }
+
+  Future<void> loadReviews() async {
+    Query query = FirebaseFirestore.instance
+        .collection('reviews')
+        .where('placeId', isEqualTo: widget.place["id"].toString())
+        .orderBy('timestamp', descending: true)
+        .limit(pageSize);
+
+    if (currentPage > 1) {
+      // If it's not the first page, start after the last visible review
+      query = query.startAfterDocument(lastReview!);
+    }
+
+    final querySnapshot = await query.get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        if (currentPage == 1) {
+          // If it's the first page, clear existing reviews
+          _allReviews.clear();
+        }
+        _allReviews.addAll(querySnapshot.docs);
+        lastReview = querySnapshot.docs.last; // Update the last visible review
+      });
+
+      _reviewsStreamController.add(_allReviews);
+    }
+  }
+
+  void previousPage() {
+    if (currentPage > 1) {
+      setState(() {
+        currentPage--;
+        loadReviews();
+      });
+    }
+  }
+
+  void nextPage() {
+    setState(() {
+      currentPage++;
+      _allReviews.clear(); // Clear the existing reviews
+      loadReviews();
+    });
+  }
+
+  void onRatingChanged(double newRating) {
+    setState(() {
+      rating = newRating;
+    });
+  }
+
+  Future<double?> fetchUserRating() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final placeId = widget.place["id"].toString();
+
+    final userRatingDoc = await FirebaseFirestore.instance
+        .collection('user_ratings')
+        .doc(userId)
+        .collection('ratings')
+        .doc(placeId)
+        .get();
+
+    if (userRatingDoc.exists) {
+      return userRatingDoc['rating'] as double;
+    } else {
+      return null; // Return null if no rating is found for the user and place
+    }
+  }
+
+  Future<bool> hasUserReviewed() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .where('placeId', isEqualTo: widget.place["id"].toString())
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final userReview = querySnapshot.docs.first;
+      reviewController.text = userReview['reviewText'];
+      rating = userReview['rating'] as double;
+    }
+
+    return querySnapshot.docs.isNotEmpty;
   }
 }

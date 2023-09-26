@@ -89,24 +89,22 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
+            Card(
+              child: ListTile(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
+                  ),
                 ),
-              ),
-              child: const Card(
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                    color: Color.fromARGB(255, 70, 159, 209),
-                  ),
-                  title: const Text('Profile'),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Color.fromARGB(255, 70, 159, 209),
-                  ),
+                leading: const Icon(
+                  Icons.person,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+                title: const Text('Profile'),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color.fromARGB(255, 70, 159, 209),
                 ),
               ),
             ),
