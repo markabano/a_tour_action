@@ -322,7 +322,19 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                               leading: CircleAvatar(
                                 child: Icon(Icons.person),
                               ),
-                              title: Text(review['reviewerName']),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RatingBarIndicator(
+                                    itemSize: 20  ,
+                                    itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber,
+                                  ),
+                                  rating: review['rating'],
+                                  // itemCount: ,
+                                  ),
+                                  Text(review['reviewerName']),
+                                ],
+                              ),
                               subtitle: Text(review['reviewText']),
                             );
                           },
@@ -521,6 +533,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   }
 
   void onRatingChanged(double newRating) {
+    print("Rate Star:" + newRating.toString()); 
     setState(() {
       rating = newRating;
     });
