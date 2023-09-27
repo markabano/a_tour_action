@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:a_tour_action/screens/screenFor_360view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -113,14 +114,28 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
                   return Center(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        picture[index],
-                        fit: BoxFit.cover,
-                        width: 1000,
-                        height: 200,
-                      ),
-                    ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: CachedNetworkImage(
+                          imageUrl: picture[index],
+                          fit: BoxFit.cover,
+                          width: 1000,
+                          height: 200,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  Center(
+                                    child: CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                                  ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        )
+                        // Image.network(
+                        //   picture[index],
+                        //   fit: BoxFit.cover,
+                        //   width: 1000,
+                        //   height: 200,
+                        // ),
+                        ),
                   );
                 },
                 options: CarouselOptions(
@@ -326,11 +341,13 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   RatingBarIndicator(
-                                    itemSize: 20  ,
-                                    itemBuilder: (context, index) => Icon(Icons.star, color: Colors.amber,
-                                  ),
-                                  rating: review['rating'],
-                                  // itemCount: ,
+                                    itemSize: 20,
+                                    itemBuilder: (context, index) => Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                    ),
+                                    rating: review['rating'],
+                                    // itemCount: ,
                                   ),
                                   Text(review['reviewerName']),
                                 ],
@@ -533,7 +550,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   }
 
   void onRatingChanged(double newRating) {
-    print("Rate Star:" + newRating.toString()); 
+    print("Rate Star:" + newRating.toString());
     setState(() {
       rating = newRating;
     });

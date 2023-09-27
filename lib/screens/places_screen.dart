@@ -1,4 +1,5 @@
 import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
@@ -69,16 +70,24 @@ class _PlacesScreenState extends State<PlacesScreen> {
                           ),
                           child: Row(
                             children: [
-                              Container(
-                                height: 80,
-                                width: 80,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  image: DecorationImage(
-                                    image: NetworkImage(
-                                      searchList[index]['pictures'][0],
+                              CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                imageUrl: searchList[index]['pictures'][0],
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  height: 80,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(15),
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
                                     ),
-                                    fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
@@ -144,19 +153,40 @@ class _PlacesScreenState extends State<PlacesScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  Container(
-                                    height: 80,
-                                    width: 80,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          place['pictures'][0],
+                                  CachedNetworkImage(
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                    imageUrl: place['pictures'][0],
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
                                         ),
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
+                                  // Container(
+                                  //   height: 80,
+                                  //   width: 80,
+                                  //   decoration: BoxDecoration(
+                                  //     borderRadius: BorderRadius.circular(15),
+                                  //     image: DecorationImage(
+                                  //       image: NetworkImage(
+                                  //         place['pictures'][0],
+                                  //       ),
+                                  //       fit: BoxFit.cover,
+                                  //     ),
+                                  //   ),
+                                  // ),
                                   SizedBox(
                                     width: 10,
                                   ),

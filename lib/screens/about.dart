@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:octo_image/octo_image.dart';
 
 class About extends StatelessWidget {
   const About({super.key});
@@ -29,11 +30,7 @@ class About extends StatelessWidget {
               Text(
                 "A-TOUR-ACTION is a mobile application that allows users to experience Baguio City's rich historical landmarks. The app provides a guide to the city's historical sites, including information about their history, significance, and architecture. With the app's audio guides and 360-degree image views, users can immerse themselves in the history of each site. Additionally, the app offers real-time weather updates and peak hours information, allowing users to plan their visits efficiently. The site recognition feature in augmented reality allows users to gain more information about the historical site. A-TOUR-ACTION is designed to be user-friendly, reliable, and accessible to all users. The app's scalability and integration with other services ensure a seamless experience for users.",
                 textAlign: TextAlign.justify,
-
-                style: TextStyle(
-                  wordSpacing: 5,
-                  height: 1.5
-                ),
+                style: TextStyle(wordSpacing: 5, height: 1.5),
               ),
               SizedBox(
                 height: 25,
@@ -45,19 +42,31 @@ class About extends StatelessWidget {
                         5, // Adjust the elevation to control the shadow depth
                     shape: CircleBorder(),
                     child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          width: 3, // Adjust the width of the border as needed
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Color.fromARGB(255, 255, 255, 255),
+                            width:
+                                3, // Adjust the width of the border as needed
+                          ),
                         ),
-                      ),
-                      child: CircleAvatar(
-                        maxRadius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/Patacsil1.jpg',),
-                      ),
-                    ),
+                        child: 
+                        // OctoImage(
+                        //   image: AssetImage("'assets/images/Patacsil1.jpg"),
+                        //   progressIndicatorBuilder: (context, progress) =>
+                        //       CircularProgressIndicator(),
+                        //   imageBuilder: (context, child) => CircleAvatar(
+                        //     maxRadius: 50,
+                        //     backgroundImage: child,
+                        //   ),
+                        // )
+                        CircleAvatar(
+                          maxRadius: 50,
+                          backgroundImage: AssetImage(
+                            'assets/images/Patacsil1.jpg',
+                          ),
+                        ),
+                        ),
                   ),
                   Column(
                     children: [
@@ -100,8 +109,9 @@ class About extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         maxRadius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/Tablatin1.jpg',),
+                        backgroundImage: AssetImage(
+                          'assets/images/Tablatin1.jpg',
+                        ),
                       ),
                     ),
                   ),
@@ -146,8 +156,9 @@ class About extends StatelessWidget {
                       ),
                       child: CircleAvatar(
                         maxRadius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/Bernisca1.jpg',),
+                        backgroundImage: AssetImage(
+                          'assets/images/Bernisca1.jpg',
+                        ),
                       ),
                     ),
                   ),
@@ -188,24 +199,25 @@ class About extends StatelessWidget {
                 height: 25,
               ),
               Card(
-                    elevation:
-                        5, // Adjust the elevation to control the shadow depth
-                    shape: CircleBorder(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          width: 3, // Adjust the width of the border as needed
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        maxRadius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/Badua1.jpg',),
-                      ),
+                elevation:
+                    5, // Adjust the elevation to control the shadow depth
+                shape: CircleBorder(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      width: 3, // Adjust the width of the border as needed
                     ),
                   ),
+                  child: CircleAvatar(
+                    maxRadius: 50,
+                    backgroundImage: AssetImage(
+                      'assets/images/Badua1.jpg',
+                    ),
+                  ),
+                ),
+              ),
               Column(
                 children: [
                   Text(
@@ -230,24 +242,25 @@ class About extends StatelessWidget {
                 height: 25,
               ),
               Card(
-                    elevation:
-                        5, // Adjust the elevation to control the shadow depth
-                    shape: CircleBorder(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          width: 3, // Adjust the width of the border as needed
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        maxRadius: 50,
-                        backgroundImage:
-                            AssetImage('assets/images/Abaño.jpg',),
-                      ),
+                elevation:
+                    5, // Adjust the elevation to control the shadow depth
+                shape: CircleBorder(),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      width: 3, // Adjust the width of the border as needed
                     ),
                   ),
+                  child: CircleAvatar(
+                    maxRadius: 50,
+                    backgroundImage: AssetImage(
+                      'assets/images/Abaño.jpg',
+                    ),
+                  ),
+                ),
+              ),
               Column(
                 children: [
                   Text(
