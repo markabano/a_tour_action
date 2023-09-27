@@ -8,8 +8,8 @@ import '../widgets/camera.dart';
 import '../auth_page.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key});
-
+  MenuScreen({super.key, this.isLoaded = false});
+  bool isLoaded;
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
@@ -17,7 +17,6 @@ class MenuScreen extends StatefulWidget {
 class _MenuScreenState extends State<MenuScreen> {
   String name = '';
   String _imageUrl = '';
-  bool isLoaded = false;
 
   @override
   void initState() {
@@ -39,7 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
               color: Color.fromARGB(255, 249, 249, 249),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
-                child: isLoaded
+                child: widget.isLoaded
                     ? Row(
                         children: [
                           Card(
@@ -90,24 +89,22 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ProfileScreen(),
+            Card(
+              child: ListTile(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ProfileScreen(),
+                  ),
                 ),
-              ),
-              child: const Card(
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.person,
-                    color: Color.fromARGB(255, 70, 159, 209),
-                  ),
-                  title: const Text('Profile'),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios,
-                    color: Color.fromARGB(255, 70, 159, 209),
-                  ),
+                leading: const Icon(
+                  Icons.person,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+                title: const Text('Profile'),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color.fromARGB(255, 70, 159, 209),
                 ),
               ),
             ),
@@ -192,7 +189,7 @@ class _MenuScreenState extends State<MenuScreen> {
     }
 
     setState(() {
-      isLoaded = true;
+      widget.isLoaded = true;
     });
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:a_tour_action/auth_page.dart';
+import 'package:a_tour_action/screens/menu_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -62,7 +63,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     TextButton(
                       onPressed: () {
                         updateUserData();
+
+                        //ignore image upload if no image is selected
+                        if (_pickedImage == null) {
+                          Navigator.pop(context);
+                          return;
+                        }
                         uploadImage(_pickedImage!);
+
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),
@@ -190,7 +198,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .update({
         'name': nameController.text,
       });
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MenuScreen(
+                    isLoaded: false,
+                  )));
     }
 
     if (passwordController.text.isNotEmpty) {

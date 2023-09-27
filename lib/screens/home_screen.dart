@@ -75,7 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 radius: 50,
                                 child: Icon(
                                   Icons.person,
-                                  size: 100,
                                 ),
                               ),
                       ),
@@ -241,7 +240,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  
                                   children: [
                                     Row(
                                       mainAxisAlignment:
