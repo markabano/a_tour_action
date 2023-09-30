@@ -1,4 +1,5 @@
 import 'package:a_tour_action/screens/about.dart';
+import 'package:a_tour_action/screens/dashboard_screen.dart';
 import 'package:a_tour_action/screens/profile_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -120,6 +121,25 @@ class _MenuScreenState extends State<MenuScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
+                    builder: (context) => DashBoardScreen(),
+                  ),
+                ),
+                leading: const Icon(
+                  Icons.dashboard,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+                title: const Text('Dashboard'),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+              ),
+            ),
+            Card(
+              child: ListTile(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
                     builder: (context) => ProfileScreen(),
                   ),
                 ),
@@ -183,7 +203,7 @@ class _MenuScreenState extends State<MenuScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, mapFill: false, placeFill: false, menuFill: true),
+          homeFill: false, gameFill: false, placeFill: false, menuFill: true),
     );
   }
 

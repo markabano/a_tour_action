@@ -28,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String name = '';
   String _imageUrl = '';
   bool isLoading = false;
+  bool isLoaded = false;
 
   var favorites = FirebaseFirestore.instance
       .collection('users')
@@ -77,7 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               // backgroundColor:
                               //     const Color.fromARGB(255, 255, 255, 255),
                               child: _imageUrl.isNotEmpty
-                              
                                   ? CachedNetworkImage(
                                       imageBuilder: (context, imageProvider) =>
                                           CircleAvatar(
@@ -91,8 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       errorWidget: (context, url, error) =>
                                           Icon(Icons.error),
                                     )
-                                  : 
-                                  CircleAvatar(
+                                  : CircleAvatar(
                                       radius: 50,
                                       child: Icon(
                                         Icons.person,
@@ -555,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: true, mapFill: false, placeFill: false, menuFill: false),
+          homeFill: true, gameFill: false, placeFill: false, menuFill: false),
     );
   }
 
@@ -595,5 +594,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       _imageUrl = '';
     }
+
+    setState(() {
+      isLoaded = true;
+    });
   }
 }

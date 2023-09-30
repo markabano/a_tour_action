@@ -1,19 +1,19 @@
+import 'package:a_tour_action/screens/game_screen.dart';
 import 'package:a_tour_action/screens/places_screen.dart';
 import 'package:a_tour_action/screens/home_screen.dart';
-import 'package:a_tour_action/screens/map_screen.dart';
 import 'package:flutter/material.dart';
 import '../screens/menu_screen.dart';
 
 class BottomNavigation extends StatelessWidget {
   final bool homeFill;
-  final bool mapFill;
+  final bool gameFill;
   final bool placeFill;
   final bool menuFill;
   const BottomNavigation(
       {super.key,
       required this.placeFill,
       required this.homeFill,
-      required this.mapFill,
+      required this.gameFill,
       required this.menuFill});
 
   @override
@@ -42,15 +42,15 @@ class BottomNavigation extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(
-              mapFill ? Icons.map_sharp : Icons.map_outlined,
+              gameFill ? Icons.gamepad : Icons.gamepad_outlined,
               color: Color.fromARGB(255, 70, 159, 209),
             ),
             onPressed: () {
-              if (!mapFill) {
+              if (!gameFill) {
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MapScreen(),
+                    builder: (context) => const GameScreen(),
                   ),
                 );
               }

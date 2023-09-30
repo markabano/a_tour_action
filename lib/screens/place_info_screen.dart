@@ -28,15 +28,25 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
   final StreamController<List<DocumentSnapshot>> _reviewsStreamController =
       StreamController<List<DocumentSnapshot>>();
-  final List<DocumentSnapshot> _allReviews = []; // List to store all reviews
+  final List<DocumentSnapshot> _allReviews = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkFavorite();
     loadReviews();
-    hasUserReviewed();
+    // Fetch and set the user's existing review data
+    hasUserReviewed().then((hasReviewed) {
+      if (hasReviewed) {
+        // User has already reviewed the place, set the initial values
+        fetchUserReview().then((userReviewData) {
+          setState(() {
+            reviewController.text = userReviewData['reviewText'];
+            rating = userReviewData['rating'] as double;
+          });
+        });
+      }
+    });
   }
 
   @override
@@ -47,6 +57,8 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final overallRating =
+        calculateOverallRating(_allReviews); // Calculate the overall rating
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -109,11 +121,10 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                           width: 1000,
                           height: 200,
                           progressIndicatorBuilder:
-                              (context, url, downloadProgress) =>
-                                  Center(
-                                    child: CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                                  ),
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
                           errorWidget: (context, url, error) =>
                               Icon(Icons.error),
                         )
@@ -140,6 +151,36 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text('Overall Rating',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
+                    Row(
+                      children: [
+                        RatingBar.builder(
+                          initialRating: overallRating,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemSize: 40.0,
+                          ignoreGestures: true,
+                          itemPadding:
+                              const EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (newRating) {},
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          ' $overallRating',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                     OutlinedButton(
                       onPressed: () {
                         Navigator.push(
@@ -323,7 +364,9 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                             final review = snapshot.data![index];
                             return ListTile(
                               leading: CircleAvatar(
-                                child: Icon(Icons.person),
+                                radius: 30,
+                                backgroundImage:
+                                    NetworkImage(review['reviewerImageUrl']),
                               ),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -419,6 +462,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
     // Check if the user has already reviewed the place
     final hasReviewed = await hasUserReviewed();
 
+    // User is submitting a new review or updating an existing one
     if (hasReviewed) {
       // User has already reviewed the place, update the existing review
       final existingReviewQuery = await FirebaseFirestore.instance
@@ -428,13 +472,12 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
           .limit(1)
           .get();
 
-      print(existingReviewQuery);
-
       if (existingReviewQuery.docs.isNotEmpty) {
         final existingReviewDoc = existingReviewQuery.docs.first;
         await existingReviewDoc.reference.update({
           'reviewText': reviewController.text,
           'rating': rating,
+          'timestamp': FieldValue.serverTimestamp(),
         });
       }
     } else {
@@ -448,6 +491,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         'userId': userId,
         'placeId': placeId,
         'reviewerName': userData['name'],
+        'reviewerImageUrl': userData['imageUrl'],
         'reviewText': reviewController.text,
         'rating': rating,
         'timestamp': FieldValue.serverTimestamp(),
@@ -455,9 +499,6 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
       await FirebaseFirestore.instance.collection('reviews').add(reviewData);
     }
-
-    // // Clear the text field
-    // reviewController.clear();
 
     // Clear the existing reviews and update the stream
     _allReviews.clear();
@@ -529,12 +570,41 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         .limit(1)
         .get();
 
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<Map<String, dynamic>> fetchUserReview() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final placeId = widget.place["id"].toString();
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .where('placeId', isEqualTo: placeId)
+        .limit(1)
+        .get();
+
     if (querySnapshot.docs.isNotEmpty) {
-      final userReview = querySnapshot.docs.first;
-      reviewController.text = userReview['reviewText'];
-      rating = userReview['rating'] as double;
+      final userReview =
+          querySnapshot.docs.first.data() as Map<String, dynamic>;
+      return userReview;
+    } else {
+      return {}; // Return an empty map if no review is found
+    }
+  }
+
+  double calculateOverallRating(List<DocumentSnapshot> reviews) {
+    if (reviews.isEmpty) {
+      return 0.0; // Return 0 if there are no reviews
     }
 
-    return querySnapshot.docs.isNotEmpty;
+    double totalRating = 0.0;
+
+    for (final review in reviews) {
+      final rating = review['rating'] as double;
+      totalRating += rating;
+    }
+
+    return totalRating / reviews.length; // Calculate the average rating
   }
 }

@@ -43,6 +43,7 @@ dependencies:
   http: ^1.1.0
   image_picker: ^1.0.4
   panorama_viewer: ^1.0.1
+  path: ^1.8.3
 
 dev_dependencies:
   arcore_flutter_plugin:

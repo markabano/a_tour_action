@@ -235,7 +235,7 @@ class _PlacesScreenState extends State<PlacesScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, mapFill: false, placeFill: true, menuFill: false),
+          homeFill: false, gameFill: false, placeFill: true, menuFill: false),
     );
   }
 
