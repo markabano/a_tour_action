@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:a_tour_action/auth_page.dart';
+import 'package:a_tour_action/screens/menu_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -27,6 +28,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String userImgUrl = '';
   Uint8List? _imageFile;
   XFile? _pickedImage;
+  ImageSource? source;
 
   bool _isLoaded = false;
 
@@ -61,7 +63,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     TextButton(
                       onPressed: () {
                         updateUserData();
+
+                        //ignore image upload if no image is selected
+                        if (_pickedImage == null) {
+                          Navigator.pop(context);
+                          return;
+                        }
                         uploadImage(_pickedImage!);
+
                         Navigator.pop(context);
                       },
                       child: const Text('Save'),
@@ -189,7 +198,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .update({
         'name': nameController.text,
       });
-      Navigator.pop(context);
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MenuScreen(
+                    isLoaded: false,
+                  )));
     }
 
     if (passwordController.text.isNotEmpty) {
@@ -214,10 +228,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> pickImage() async {
+    //camera or gallery
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheet(
+        onClosing: () {},
+        builder: (context) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera),
+              title: const Text('Camera'),
+              onTap: () {
+                Navigator.pop(context);
+                source = ImageSource.camera;
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image_search),
+              title: const Text('Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                source = ImageSource.gallery;
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+
     //Pick an image
     ImagePicker imagePicker = ImagePicker();
-    XFile? pickedImage =
-        await imagePicker.pickImage(source: ImageSource.camera);
+    XFile? pickedImage = await imagePicker.pickImage(source: source!);
 
     //Convert to bytes
     if (pickedImage != null) {

@@ -20,152 +20,148 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Container(
-            height: 725,
-          // padding: const EdgeInsets.all(12.0),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.contain,
-              image: AssetImage('assets/images/image 11.jpg'),
-              alignment: Alignment.bottomCenter,
-              opacity: 0.8,
-            ),
-          ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 25),
-                Text(
-                  'A Tour Action',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                const SizedBox(height: 25),
-                Text(
-                  'Login',
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[700]),
-                ),
-                const SizedBox(height: 30),
-              SizedBox(
-                height: 55,
-                width: 250,
-                child: Column(
-                  children: [
-                  Text(
-            'By signing in you are agreeing to our ',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[700],
-            ),
-                  ),
-                  GestureDetector(
-            onTap: () {
-              // Handle the click event for "Terms and Privacy Policy" here.
-              // You can use Navigator.push() to navigate to the terms and privacy policy page.
-              // Example:
-              // Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndPrivacyPolicyScreen()));
-            },
-            child: const Text(
-              'Terms and Privacy Policy',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue, // You can change the color to make it stand out.
-                decoration: TextDecoration.underline,
-              ),
-            ),
-                  ),
-                  ],
-              ),
-            ),
-                const SizedBox(height: 10),
-                CustomTextField(
-                    controller: emailController,
-                    hintText: 'Email',
-                    icon: Icons.email,
-                    obscureText: false),
-                const SizedBox(height: 10),
-                CustomTextField(
-                    controller: passwordController,
-                    hintText: 'Password',
-                    icon: Icons.lock,
-                    obscureText: true),
-                const SizedBox(height: 15),
-                TextButton(onPressed: (){}, 
-                child: const Text("Forgot Password")
-                ),
-                ElevatedButton(
-                  onPressed: signIn,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    minimumSize: const Size(150, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: const Text('Login'),
-                ),
-                const SizedBox(height: 25),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Not a member yet?'),
-                    const SizedBox(width: 5),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterScreen(),
-                        ),
-                      ),
-                      child: const Text('Register here',
-                          style: TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
-                          )),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Expanded(
-                  child: Stack(
-                    fit: StackFit.expand,
-                    alignment: Alignment.center,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  color: Color.fromARGB(255, 255, 255, 255),
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 100,
-                        height: 200,
-                        color: Colors.blue, 
-
-                      child: ClipPath(
-                        clipper: ClipClipper(),
-                        child: Container(
-                          width: 100,
-                          height: 250,
-                          decoration: const BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.contain,
-              image: AssetImage('assets/images/image 11.jpg'),
-              alignment: Alignment.bottomCenter,
-              opacity: 0.8,
-            ),
-          ),
-                        ),
+                      Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/logo.png',
+                            height: MediaQuery.of(context).size.width * .3,
+                          ),
+                          Text(
+                            'A-TOUR-ACTION',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 70, 159, 209),
+                            ),
+                          ),
+                         
+                          Text(
+                            'Login',
+                            style: TextStyle(
+                                fontSize: 30,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 30),
+                          SizedBox(
+                            height: 55,
+                            width: 250,
+                            child: Column(
+                              children: [
+                                Text(
+                                  'By signing in you are agreeing to our ',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Handle the click event for "Terms and Privacy Policy" here.
+                                    // You can use Navigator.push() to navigate to the terms and privacy policy page.
+                                    // Example:
+                                    // Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndPrivacyPolicyScreen()));
+                                  },
+                                  child: const Text(
+                                    'Terms and Privacy Policy',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors
+                                          .blue, // You can change the color to make it stand out.
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          CustomTextField(
+                              controller: emailController,
+                              hintText: 'Email',
+                              icon: Icons.email,
+                              obscureText: false),
+                          const SizedBox(height: 10),
+                          CustomTextField(
+                              controller: passwordController,
+                              hintText: 'Password',
+                              icon: Icons.lock,
+                              obscureText: true),
+                          const SizedBox(height: 15),
+                          TextButton(
+                              onPressed: () {},
+                              child: const Text("Forgot Password")),
+                          ElevatedButton(
+                            onPressed: signIn,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              minimumSize: const Size(150, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text('Login'),
+                          ),
+                          const SizedBox(height: 25),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Not a member yet?'),
+                              const SizedBox(width: 5),
+                              GestureDetector(
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const RegisterScreen(),
+                                  ),
+                                ),
+                                child: const Text('Register here',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ),
-  ]
+                      Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: [
+                          Image.asset(
+                            'assets/images/image 11.jpg',
+                            height: MediaQuery.of(context).size.width * .5,
+                          ),
+                          ClipPath(
+                            clipper: ClipClipper(),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 70, 159, 209),
+                              ),
+                              height: 100,
+                            ),
+                          )
+                        ],
+                      )
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -253,26 +249,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
- class ClipClipper extends CustomClipper<Path> {
-  
-    @override
-    Path getClip(Size size) {
+class ClipClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    Path path = Path();
 
-      Path path=Path();
+    path.moveTo(0, 0); // Move to the top-left corner
+    path.lineTo(0, size.height); // Line to the bottom-left corner
+    path.lineTo(size.width, size.height); // Line to the bottom-right corner
+    path.lineTo(size.width, 0); // Line to the top-right corner
+    path.quadraticBezierTo(size.width / 2, size.height / 1, 0, 0);
 
-      // path.lineTo(0, size.height);
-      // path.lineTo(size.width, size.height);
-      // path.quadraticBezierTo(0, size.height , 0, 0);
-      path.moveTo(0, 0); // Move to the top-left corner
-      path.lineTo(0, size.height / 2); // Line to the left side of the semi-circle
-      path.quadraticBezierTo(
-      size.width / 2, size.height, size.width, size.height / 2); // Create the upside-down semi-circle
-      path.lineTo(size.width, 0); // Line to the top-right corner
-      path.close(); // Close the path to complete the clip shape
-      
-      return path;
-    }
-  
-    @override
-    bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+    path.close(); // Close the path to complete the clip shape
+
+    return path;
   }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
+}

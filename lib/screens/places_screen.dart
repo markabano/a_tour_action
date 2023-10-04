@@ -1,4 +1,5 @@
 import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
@@ -12,11 +13,12 @@ class PlacesScreen extends StatefulWidget {
 }
 
 class _PlacesScreenState extends State<PlacesScreen> {
-  List<String> places = [];
-  List placeToPass = [];
+  var firebasePlaces = FirebaseFirestore.instance
+      .collection('places')
+      .orderBy('name')
+      .snapshots();
 
-  var firebasePlaces =
-      FirebaseFirestore.instance.collection('places').snapshots();
+  List searchList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -29,107 +31,224 @@ class _PlacesScreenState extends State<PlacesScreen> {
               height: 90,
               padding: const EdgeInsets.all(20),
               child: TextField(
-                  textAlignVertical: TextAlignVertical.center,
-                  decoration: InputDecoration(
-                      hintText: 'Search',
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: Colors.black,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ))),
+                textAlignVertical: TextAlignVertical.center,
+                decoration: InputDecoration(
+                    hintText: 'Search',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.black,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    )),
+                onChanged: (query) {
+                  search(query);
+                },
+              ),
             ),
-            StreamBuilder(
-              stream: firebasePlaces,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Expanded(
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        DocumentSnapshot place = snapshot.data!.docs[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    PlaceInfoScreen(place: place.data()),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.all(10),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
+            if (searchList.isNotEmpty)
+              Expanded(
+                child: ListView.builder(
+                    itemCount: searchList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlaceInfoScreen(
+                                  place: searchList[index].data()),
                             ),
-                            child: Row(
-                              children: [
-                                Container(
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Row(
+                            children: [
+                              CachedNetworkImage(
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
+                                imageUrl: searchList[index]['pictures'][0],
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
                                   height: 80,
                                   width: 80,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
                                     image: DecorationImage(
-                                      image: NetworkImage(
-                                        place['pictures'][0],
-                                      ),
+                                      image: imageProvider,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
-                                SizedBox(
-                                  width: 10,
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      searchList[index]['name'],
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1, // Limit to one line
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      searchList[index]['description'],
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2, // Limit to two lines
+                                    ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        place['name'],
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1, // Limit to one line
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        place['description'],
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 2, // Limit to two lines
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
+                              )
+                            ],
                           ),
-                        );
-                      },
-                    ),
-                  );
-                } else {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            )
+                        ),
+                      );
+                    }),
+              )
+            else
+              StreamBuilder(
+                stream: firebasePlaces,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          DocumentSnapshot place = snapshot.data!.docs[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      PlaceInfoScreen(place: place.data()),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Row(
+                                children: [
+                                  CachedNetworkImage(
+                                    progressIndicatorBuilder: (context, url,
+                                            downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                    errorWidget: (context, url, error) =>
+                                        Icon(Icons.error),
+                                    imageUrl: place['pictures'][0],
+                                    imageBuilder: (context, imageProvider) =>
+                                        Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Container(
+                                  //   height: 80,
+                                  //   width: 80,
+                                  //   decoration: BoxDecoration(
+                                  //     borderRadius: BorderRadius.circular(15),
+                                  //     image: DecorationImage(
+                                  //       image: NetworkImage(
+                                  //         place['pictures'][0],
+                                  //       ),
+                                  //       fit: BoxFit.cover,
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          place['name'],
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1, // Limit to one line
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          place['description'],
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 2, // Limit to two lines
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  } else {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              )
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, mapFill: false, placeFill: true, menuFill: false),
+          homeFill: false, gameFill: false, placeFill: true, menuFill: false),
     );
+  }
+
+  Future search(String query) async {
+    final lowercaseQuery = query.toLowerCase();
+
+    final result = await FirebaseFirestore.instance
+        .collection('places')
+        .where('searchKeywords', arrayContains: lowercaseQuery)
+        .get();
+
+    setState(() {
+      searchList = result.docs.map((e) => e.data()).toList();
+    });
   }
 }
