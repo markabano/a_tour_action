@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     bottomRight:
                         Radius.circular(25.0), // Adjust the radius as needed
                   ),
-                  color: const Color.fromARGB(255, 70, 159, 209),
+                  color: Color.fromARGB(255, 70, 159, 209),
                 ),
                 width: double.infinity,
                 height: 200,
