@@ -1,5 +1,6 @@
  import 'dart:async';
 import 'package:a_tour_action/screens/screenFor_360view.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,27 +25,25 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   DocumentSnapshot? lastReview; // Store the last visible review
 
   double rating = 0.0;
-  double userRating = 0.0;
 
   final StreamController<List<DocumentSnapshot>> _reviewsStreamController =
       StreamController<List<DocumentSnapshot>>();
-  final List<DocumentSnapshot> _allReviews = []; // List to store all reviews
+  final List<DocumentSnapshot> _allReviews = [];
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     checkFavorite();
     loadReviews();
-    hasUserReviewed();
-
-    // Fetch the user's previous rating from Firestore
-    fetchUserRating().then((double? fetchedRating) {
-      if (fetchedRating != null) {
-        setState(() {
-          userRating = fetchedRating;
-          rating =
-              userRating; // Set the rating variable to the user's previous rating
+    // Fetch and set the user's existing review data
+    hasUserReviewed().then((hasReviewed) {
+      if (hasReviewed) {
+        // User has already reviewed the place, set the initial values
+        fetchUserReview().then((userReviewData) {
+          setState(() {
+            reviewController.text = userReviewData['reviewText'];
+            rating = userReviewData['rating'] as double;
+          });
         });
       }
     });
@@ -58,6 +57,8 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final overallRating =
+        calculateOverallRating(_allReviews); // Calculate the overall rating
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -113,14 +114,27 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
                   return Center(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        picture[index],
-                        fit: BoxFit.cover,
-                        width: 1000,
-                        height: 200,
-                      ),
-                    ),
+                        borderRadius: BorderRadius.circular(20),
+                        child: CachedNetworkImage(
+                          imageUrl: picture[index],
+                          fit: BoxFit.cover,
+                          width: 1000,
+                          height: 200,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) => Center(
+                            child: CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                          ),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
+                        )
+                        // Image.network(
+                        //   picture[index],
+                        //   fit: BoxFit.cover,
+                        //   width: 1000,
+                        //   height: 200,
+                        // ),
+                        ),
                   );
                 },
                 options: CarouselOptions(
@@ -137,13 +151,43 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const Text('Overall Rating',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18)),
+                    Row(
+                      children: [
+                        RatingBar.builder(
+                          initialRating: overallRating,
+                          minRating: 1,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          itemSize: 40.0,
+                          ignoreGestures: true,
+                          itemPadding:
+                              const EdgeInsets.symmetric(horizontal: 4.0),
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (newRating) {},
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          ' $overallRating',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
                     OutlinedButton(
                       onPressed: () {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  ScreenFor360View(place: widget.place["name"]),
+                                  ScreenFor360View(place: widget.place),
                             ));
                       },
                       style: OutlinedButton.styleFrom(
@@ -320,9 +364,25 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                             final review = snapshot.data![index];
                             return ListTile(
                               leading: CircleAvatar(
-                                child: Icon(Icons.person),
+                                radius: 30,
+                                backgroundImage:
+                                    NetworkImage(review['reviewerImageUrl']),
                               ),
-                              title: Text(review['reviewerName']),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RatingBarIndicator(
+                                    itemSize: 20,
+                                    itemBuilder: (context, index) => Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
+                                    ),
+                                    rating: review['rating'],
+                                    // itemCount: ,
+                                  ),
+                                  Text(review['reviewerName']),
+                                ],
+                              ),
                               subtitle: Text(review['reviewText']),
                             );
                           },
@@ -397,16 +457,18 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
   Future<void> addReview() async {
     final userId = FirebaseAuth.instance.currentUser!.uid;
+    final placeId = widget.place["id"].toString();
 
     // Check if the user has already reviewed the place
     final hasReviewed = await hasUserReviewed();
 
+    // User is submitting a new review or updating an existing one
     if (hasReviewed) {
       // User has already reviewed the place, update the existing review
       final existingReviewQuery = await FirebaseFirestore.instance
           .collection('reviews')
           .where('userId', isEqualTo: userId)
-          .where('placeId', isEqualTo: widget.place["id"].toString())
+          .where('placeId', isEqualTo: placeId)
           .limit(1)
           .get();
 
@@ -415,6 +477,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         await existingReviewDoc.reference.update({
           'reviewText': reviewController.text,
           'rating': rating,
+          'timestamp': FieldValue.serverTimestamp(),
         });
       }
     } else {
@@ -426,8 +489,9 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
 
       final reviewData = {
         'userId': userId,
-        'placeId': widget.place["id"].toString(),
+        'placeId': placeId,
         'reviewerName': userData['name'],
+        'reviewerImageUrl': userData['imageUrl'],
         'reviewText': reviewController.text,
         'rating': rating,
         'timestamp': FieldValue.serverTimestamp(),
@@ -436,43 +500,12 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
       await FirebaseFirestore.instance.collection('reviews').add(reviewData);
     }
 
-    // Add/update the user's rating in Firestore
-    await FirebaseFirestore.instance
-        .collection('user_ratings')
-        .doc(userId)
-        .collection('ratings')
-        .doc(widget.place["id"].toString())
-        .set({'rating': rating});
+    // Clear the existing reviews and update the stream
+    _allReviews.clear();
+    _reviewsStreamController.add([]);
 
-    // Fetch and update the user's previous rating
-    fetchUserRating().then((double? fetchedRating) {
-      if (fetchedRating != null) {
-        setState(() {
-          userRating = fetchedRating;
-          rating =
-              userRating; // Set the rating variable to the user's previous rating
-        });
-      }
-    });
-
-    // Add the new review to the _allReviews list
-    final newReview = await FirebaseFirestore.instance
-        .collection('reviews')
-        .where('userId', isEqualTo: userId)
-        .where('placeId', isEqualTo: widget.place["id"].toString())
-        .orderBy('timestamp', descending: true)
-        .limit(1)
-        .get();
-
-    if (newReview.docs.isNotEmpty) {
-      _allReviews.insert(0, newReview.docs.first);
-    }
-
-    // Clear the text field
-    reviewController.clear();
-
-    // Update the stream with the updated _allReviews list
-    _reviewsStreamController.add(_allReviews);
+    // Load the updated reviews
+    loadReviews();
   }
 
   Future<void> loadReviews() async {
@@ -521,27 +554,10 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
   }
 
   void onRatingChanged(double newRating) {
+    print("Rate Star:" + newRating.toString());
     setState(() {
       rating = newRating;
     });
-  }
-
-  Future<double?> fetchUserRating() async {
-    final userId = FirebaseAuth.instance.currentUser!.uid;
-    final placeId = widget.place["id"].toString();
-
-    final userRatingDoc = await FirebaseFirestore.instance
-        .collection('user_ratings')
-        .doc(userId)
-        .collection('ratings')
-        .doc(placeId)
-        .get();
-
-    if (userRatingDoc.exists) {
-      return userRatingDoc['rating'] as double;
-    } else {
-      return null; // Return null if no rating is found for the user and place
-    }
   }
 
   Future<bool> hasUserReviewed() async {
@@ -554,12 +570,41 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         .limit(1)
         .get();
 
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+  Future<Map<String, dynamic>> fetchUserReview() async {
+    final userId = FirebaseAuth.instance.currentUser!.uid;
+    final placeId = widget.place["id"].toString();
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('userId', isEqualTo: userId)
+        .where('placeId', isEqualTo: placeId)
+        .limit(1)
+        .get();
+
     if (querySnapshot.docs.isNotEmpty) {
-      final userReview = querySnapshot.docs.first;
-      reviewController.text = userReview['reviewText'];
-      rating = userReview['rating'] as double;
+      final userReview =
+          querySnapshot.docs.first.data() as Map<String, dynamic>;
+      return userReview;
+    } else {
+      return {}; // Return an empty map if no review is found
+    }
+  }
+
+  double calculateOverallRating(List<DocumentSnapshot> reviews) {
+    if (reviews.isEmpty) {
+      return 0.0; // Return 0 if there are no reviews
     }
 
-    return querySnapshot.docs.isNotEmpty;
+    double totalRating = 0.0;
+
+    for (final review in reviews) {
+      final rating = review['rating'] as double;
+      totalRating += rating;
+    }
+
+    return totalRating / reviews.length; // Calculate the average rating
   }
 }

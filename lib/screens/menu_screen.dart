@@ -1,5 +1,7 @@
 import 'package:a_tour_action/screens/about.dart';
+import 'package:a_tour_action/screens/dashboard_screen.dart';
 import 'package:a_tour_action/screens/profile_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,21 +59,46 @@ class _MenuScreenState extends State<MenuScreen> {
                                       3, // Adjust the width of the border as needed
                                 ),
                               ),
-                              child: CircleAvatar(
-                                radius:
-                                    48, // Adjust the radius to fit within the border
-                                backgroundImage: _imageUrl.isNotEmpty
-                                    ? NetworkImage(_imageUrl)
-                                    : null,
-                                backgroundColor: Colors
-                                    .transparent, // Set a transparent background color
-                                child: _imageUrl.isEmpty
-                                    ? Icon(
-                                        Icons.person,
-                                        size: 48,
-                                      )
-                                    : null, // Show the Icon only when _imageUrl is empty
+                              child: CachedNetworkImage(
+                                imageBuilder: (context, imageProvider) =>
+                                    CircleAvatar(
+                                  radius:
+                                      48, // Adjust the radius to fit within the border
+                                  backgroundImage: _imageUrl.isNotEmpty
+                                      ? imageProvider
+                                      : null,
+                                  backgroundColor: Colors
+                                      .transparent, // Set a transparent background color
+                                  child: _imageUrl.isEmpty
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 48,
+                                        )
+                                      : null,
+                                ),
+                                imageUrl: _imageUrl,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
+                              // CircleAvatar(
+                              //   radius:
+                              //       48, // Adjust the radius to fit within the border
+                              //   backgroundImage: _imageUrl.isNotEmpty
+                              //       ? NetworkImage(_imageUrl)
+                              //       : null,
+                              //   backgroundColor: Colors
+                              //       .transparent, // Set a transparent background color
+                              //   child: _imageUrl.isEmpty
+                              //       ? Icon(
+                              //           Icons.person,
+                              //           size: 48,
+                              //         )
+                              //       : null, // Show the Icon only when _imageUrl is empty
+                              // ),
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -89,6 +116,25 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             const SizedBox(height: 10),
+            Card(
+              child: ListTile(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DashBoardScreen(),
+                  ),
+                ),
+                leading: const Icon(
+                  Icons.dashboard,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+                title: const Text('Dashboard'),
+                trailing: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Color.fromARGB(255, 70, 159, 209),
+                ),
+              ),
+            ),
             Card(
               child: ListTile(
                 onTap: () => Navigator.push(
@@ -157,7 +203,7 @@ class _MenuScreenState extends State<MenuScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, mapFill: false, placeFill: false, menuFill: true),
+          homeFill: false, gameFill: false, placeFill: false, menuFill: true),
     );
   }
 

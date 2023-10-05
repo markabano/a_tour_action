@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:a_tour_action/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../widgets/bottom_navigation.dart';
 import '../widgets/camera.dart';
 import 'package:http/http.dart' as http;
-import 'package:card_swiper/card_swiper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 // import 'package:carousel_slider/carousel_slider.dart';
 class HomeScreen extends StatefulWidget {
@@ -27,6 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String name = '';
   String _imageUrl = '';
   bool isLoading = false;
+  bool isLoaded = false;
 
   var favorites = FirebaseFirestore.instance
       .collection('users')
@@ -52,51 +54,70 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Container(
                 padding: const EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Color.fromARGB(
-                              255, 206, 206, 206), // White border color
-                          width: 3.0, // Border width
+                child: GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProfileScreen(),
+                      )),
+                  child: Row(
+                    children: [
+                      Card(
+                        elevation: 5,
+                        shape: CircleBorder(),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: Color.fromARGB(
+                                  255, 255, 255, 255), // White border color
+                              width: 3.0, // Border width
+                            ),
+                          ),
+                          child: CircleAvatar(
+                              // backgroundColor:
+                              //     const Color.fromARGB(255, 255, 255, 255),
+                              child: _imageUrl.isNotEmpty
+                                  ? CachedNetworkImage(
+                                      imageBuilder: (context, imageProvider) =>
+                                          CircleAvatar(
+                                        backgroundImage: imageProvider,
+                                      ),
+                                      imageUrl: _imageUrl,
+                                      progressIndicatorBuilder: (context, url,
+                                              downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    )
+                                  : CircleAvatar(
+                                      radius: 50,
+                                      child: Icon(
+                                        Icons.person,
+                                      ),
+                                    )),
                         ),
                       ),
-                      child: CircleAvatar(
-                        backgroundColor:
-                            const Color.fromARGB(255, 255, 255, 255),
-                        child: _imageUrl.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage: NetworkImage(_imageUrl),
-                              )
-                            : const CircleAvatar(
-                                radius: 50,
-                                child: Icon(
-                                  Icons.person,
-                                ),
-                              ),
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "Hello!",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          Text(
-                            name,
-                            style: const TextStyle(
-                                fontSize: 17, fontWeight: FontWeight.bold),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Hello!",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                            Text(
+                              name,
+                              style: const TextStyle(
+                                  fontSize: 17, fontWeight: FontWeight.bold),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
               Container(
@@ -194,7 +215,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         )
                       : const Center(
-                          child: CircularProgressIndicator(),
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                          ),
                         ),
                 ),
               ),
@@ -246,26 +269,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          child: Image.network(
-                                            place['data']['pictures'][0],
-                                            height: 150,
-                                            width: 150,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            child: CachedNetworkImage(
+                                              imageUrl: place['data']
+                                                  ['pictures'][0],
+                                              height: 150,
+                                              width: 150,
+                                              fit: BoxFit.cover,
+                                              progressIndicatorBuilder:
+                                                  (context, url, progress) =>
+                                                      Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: const Color.fromARGB(
+                                                      255, 70, 159, 209),
+                                                  value: progress.progress,
+                                                ),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
+                                            )),
                                         Column(
                                           // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                           children: [
                                             ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(5),
-                                              child: Image.network(
-                                                place['data']['pictures'][1],
+                                              child: CachedNetworkImage(
+                                                imageUrl: place['data']
+                                                    ['pictures'][1],
                                                 height: 70,
                                                 width: 100,
                                                 fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url, progress) =>
+                                                        Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: const Color.fromARGB(
+                                                        255, 70, 159, 209),
+                                                    value: progress.progress,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
                                               ),
                                             ),
                                             const SizedBox(
@@ -274,11 +324,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(5),
-                                              child: Image.network(
-                                                place['data']['pictures'][2],
+                                              child: CachedNetworkImage(
+                                                imageUrl: place['data']
+                                                    ['pictures'][2],
                                                 height: 70,
                                                 width: 100,
                                                 fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url, progress) =>
+                                                        Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: const Color.fromARGB(
+                                                        255, 70, 159, 209),
+                                                    value: progress.progress,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
                                               ),
                                             ),
                                           ],
@@ -357,44 +421,100 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          child: Image.network(
-                                            place['data']['pictures'][0],
-                                            height: 150,
-                                            width: 150,
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            child: CachedNetworkImage(
+                                              imageUrl: place['data']
+                                                  ['pictures'][0],
+                                              height: 150,
+                                              width: 150,
+                                              fit: BoxFit.cover,
+                                              progressIndicatorBuilder:
+                                                  (context, url, progress) =>
+                                                      Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: const Color.fromARGB(
+                                                      255, 70, 159, 209),
+                                                  value: progress.progress,
+                                                ),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Icon(Icons.error),
+                                            )),
                                         Column(
                                           // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                           children: [
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              child: Image.network(
-                                                place['data']['pictures'][1],
-                                                height: 70,
-                                                width: 100,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: place['data']
+                                                      ['pictures'][1],
+                                                  height: 70,
+                                                  width: 100,
+                                                  fit: BoxFit.cover,
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              progress) =>
+                                                          Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              70,
+                                                              159,
+                                                              209),
+                                                      value: progress.progress,
+                                                    ),
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                )),
                                             const SizedBox(
-                                              height: 5,
+                                              height: 10,
                                             ),
                                             ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(5),
-                                              child: Image.network(
-                                                place['data']['pictures'][2],
-                                                height: 70,
-                                                width: 100,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                child: CachedNetworkImage(
+                                                  imageUrl: place['data']
+                                                      ['pictures'][2],
+                                                  height: 70,
+                                                  width: 100,
+                                                  fit: BoxFit.cover,
+                                                  progressIndicatorBuilder:
+                                                      (context, url,
+                                                              progress) =>
+                                                          Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              70,
+                                                              159,
+                                                              209),
+                                                      value: progress.progress,
+                                                    ),
+                                                  ),
+                                                  errorWidget:
+                                                      (context, url, error) =>
+                                                          Icon(Icons.error),
+                                                )
+                                                // Image.network(
+                                                //   place['data']['pictures'][2],
+                                                //   height: 70,
+                                                //   width: 100,
+                                                //   fit: BoxFit.cover,
+                                                // ),
+                                                ),
                                           ],
                                         )
                                       ],
@@ -419,7 +539,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     } else {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: CircularProgressIndicator(
+                          color: const Color.fromARGB(255, 70, 159, 209),
+                        ),
                       );
                     }
                   },
@@ -432,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: true, mapFill: false, placeFill: false, menuFill: false),
+          homeFill: true, gameFill: false, placeFill: false, menuFill: false),
     );
   }
 
@@ -472,5 +594,9 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       _imageUrl = '';
     }
+
+    setState(() {
+      isLoaded = true;
+    });
   }
 }
