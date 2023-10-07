@@ -187,7 +187,7 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  ScreenFor360View(place: widget.place),
+                                  ScreenFor360View(place: widget.place, index: 0 ),
                             ));
                       },
                       style: OutlinedButton.styleFrom(
