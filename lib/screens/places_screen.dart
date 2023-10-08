@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:a_tour_action/screens/place_info_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,8 +57,8 @@ class _PlacesScreenState extends State<PlacesScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PlaceInfoScreen(
-                                  place: searchList[index].data()),
+                              builder: (context) =>
+                                  PlaceInfoScreen(place: searchList[index]),
                             ),
                           );
                         },
@@ -128,6 +129,15 @@ class _PlacesScreenState extends State<PlacesScreen> {
               StreamBuilder(
                 stream: firebasePlaces,
                 builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // Show a loading indicator while data is loading
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return Text(
+                        'No data available'); // Handle the case when there's no data
+                  }
+
                   if (snapshot.hasData) {
                     return Expanded(
                       child: ListView.builder(
@@ -174,19 +184,6 @@ class _PlacesScreenState extends State<PlacesScreen> {
                                       ),
                                     ),
                                   ),
-                                  // Container(
-                                  //   height: 80,
-                                  //   width: 80,
-                                  //   decoration: BoxDecoration(
-                                  //     borderRadius: BorderRadius.circular(15),
-                                  //     image: DecorationImage(
-                                  //       image: NetworkImage(
-                                  //         place['pictures'][0],
-                                  //       ),
-                                  //       fit: BoxFit.cover,
-                                  //     ),
-                                  //   ),
-                                  // ),
                                   SizedBox(
                                     width: 10,
                                   ),

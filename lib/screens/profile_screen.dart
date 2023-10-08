@@ -257,6 +257,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
 
+    if (source == null) return;
     //Pick an image
     ImagePicker imagePicker = ImagePicker();
     XFile? pickedImage = await imagePicker.pickImage(source: source!);
