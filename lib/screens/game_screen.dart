@@ -12,9 +12,38 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
-        child: Center(child: Text('Game Screen')),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Container(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  height: MediaQuery.of(context).size.height,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/game_logo_atouraction.png',
+                            height: MediaQuery.of(context).size.width * .3,
+                          ),
+                          const SizedBox( height: 25,),
+                          TextButton(onPressed: (){}, child: const Text('Learn About Historical Sites')),
+                          TextButton(onPressed: (){}, child: const Text('Options')),
+                        ],
+                      ),
+                     
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
