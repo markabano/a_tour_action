@@ -19,21 +19,29 @@ class _GameScreenState extends State<GameScreen> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  color: const Color.fromARGB(255, 255, 255, 255),
+                  color: const Color.fromRGBO(246, 245, 241, 1),
                   height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Column(
                         children: [
                           Image.asset(
                             'assets/images/game_logo_atouraction.png',
-                            height: MediaQuery.of(context).size.width * .3,
+                            height: MediaQuery.of(context).size.width * 0.9,
                           ),
-                          const SizedBox( height: 25,),
-                          TextButton(onPressed: (){}, child: const Text('Learn About Historical Sites')),
-                          TextButton(onPressed: (){}, child: const Text('Options')),
+                          // const SizedBox( height: 15,),
+                          ElevatedButton(onPressed: (){}, child: const Text('Take Quiz!',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500
+                          ),),),
+                          ElevatedButton(onPressed: (){}, child: const Text('Options',style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500
+                          ),),),
                         ],
                       ),
                      
