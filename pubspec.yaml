@@ -34,6 +34,7 @@ dependencies:
   carousel_slider: ^4.2.1
   cloud_firestore: ^4.9.1
   cupertino_icons: ^1.0.2
+  dio: ^5.3.3
   firebase_auth: ^4.9.0
   firebase_core: ^2.15.1
   firebase_storage: ^11.2.6

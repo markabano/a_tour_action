@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class UploadPlaceScreen extends StatefulWidget {
   const UploadPlaceScreen({super.key, this.editUploadedPlace});
@@ -20,7 +23,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
   List<File> _images = [];
   File? _image360;
   List<String> imageUrl = [];
-  String image360Url = '';
+  List<String> image360Url = [];
 
   final nameController = TextEditingController();
   final latController = TextEditingController();
@@ -58,7 +61,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
               minute: 59); // Default to 11:59 PM if null or parsing fails
 
       if (place['panorama'] != null) {
-        image360Url = place['panorama'];
+        image360Url = List<String>.from(place['panorama']);
       }
 
       if (place['pictures'] != null) {
@@ -78,20 +81,37 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                if (nameController.text.isEmpty ||
-                    latController.text.isEmpty ||
-                    lngController.text.isEmpty ||
-                    descController.text.isEmpty ||
-                    _images.isEmpty ||
-                    _images.length < 5) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill all the fields'),
-                    ),
-                  );
-                  return;
+                if (widget.editUploadedPlace == null) {
+                  if (nameController.text.isEmpty ||
+                      latController.text.isEmpty ||
+                      lngController.text.isEmpty ||
+                      descController.text.isEmpty ||
+                      _images.isEmpty ||
+                      _images.length < 5) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill all the fields'),
+                      ),
+                    );
+                    return;
+                  } else {
+                    _uploadPlace(context);
+                  }
+                } else {
+                  if (nameController.text.isEmpty ||
+                      latController.text.isEmpty ||
+                      lngController.text.isEmpty ||
+                      descController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill all the fields'),
+                      ),
+                    );
+                    return;
+                  } else {
+                    _editPlace(context);
+                  }
                 }
-                uploadPlace(context);
               },
               icon: const Icon(Icons.save),
             ),
@@ -190,7 +210,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
-                                  image360Url), // Use the selected image
+                                  image360Url[0]), // Use the selected image
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -201,7 +221,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                             onPressed: () {
                               // Remove the selected image at this index
                               setState(() {
-                                image360Url = '';
+                                image360Url.removeAt(0);
                               });
                             },
                             icon: const Icon(Icons.remove_circle),
@@ -402,7 +422,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     });
   }
 
-  Future<void> uploadPlace(BuildContext context) async {
+  Future<void> _uploadPlace(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
     final String placeName = nameController.text;
     final String lat = latController.text;
@@ -480,7 +500,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
           final imageUrlForImage = await ref.getDownloadURL();
 
           // Add the URL
-          image360Url = imageUrlForImage;
+          image360Url.add(imageUrlForImage);
 
           // Increment the uploaded images counter
           uploadedImages++;
@@ -582,55 +602,282 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         'lng': double.parse(lng),
         'description': descController.text,
         'pictures': imageUrl,
-        'panorama': [image360Url],
+        'panorama': image360Url,
         'searchKeywords': searchKeywords,
         'uid': user!.uid,
       });
     }
   }
 
-  Future<void> editPlace(String placeId, Map<String, dynamic> updatedData,
-      List<String> updatedPictures) async {
+  Future<void> _editPlace(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final String oldPlaceName = widget.editUploadedPlace['name'];
+    final String newPlaceName = nameController.text;
+    final String lat = latController.text;
+    final String lng = lngController.text;
+
+    // Store the initial context in a variable
+    BuildContext scaffoldContext = context; // Use a different variable name
+
+    // Show a progress dialog
+    showDialog(
+      context: scaffoldContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Updating Place...'),
+              LinearProgressIndicator(),
+            ],
+          ),
+        );
+      },
+    );
+
+    // Initialize a list to store the new image URLs
+    List<String> newImageUrls = [];
+
+    List<String> new360ImageUrls = [];
+
+    // Image360 Upload (if a new image is selected)
+    if (_image360 != null) {
+      // Unique file name
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Upload to Firebase
+      final Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('places')
+          .child(oldPlaceName)
+          .child('panorama')
+          .child(fileName);
+
+      try {
+        // Store file in Firebase
+        await ref.putFile(_image360!);
+
+        // Get file URL
+        final imageUrlForImage = await ref.getDownloadURL();
+
+        // Add the URL
+        new360ImageUrls.add(imageUrlForImage);
+      } catch (error) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to upload 360-degree image'),
+          ),
+        );
+        Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+        return;
+      }
+    } else {
+      // No new 360-degree image selected, so use the existing URL if available
+    }
+
+    // Image Upload (for new images)
+    for (var image in _images) {
+      // Unique file name
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Upload to Firebase
+      final Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('places')
+          .child(oldPlaceName)
+          .child('images')
+          .child(fileName);
+
+      try {
+        // Store file in Firebase
+        await ref.putFile(File(image.path));
+
+        // Get file URL
+        final imageUrlForImage = await ref.getDownloadURL();
+
+        // Add the URL to the list
+        newImageUrls.add(imageUrlForImage);
+      } catch (error) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to upload image'),
+          ),
+        );
+        Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+        return;
+      }
+    }
+
+    // Rename the folder if the place name has changed
+    if (oldPlaceName != newPlaceName) {
+      await renameFolder(oldPlaceName, newPlaceName);
+    }
+
+    // Update the place document with the new data and the new place name
+    var searchKeywordsName = newPlaceName;
+    final List<String> searchKeywords =
+        searchKeywordsName.toLowerCase().split(' ');
+
     try {
-      final placeRef =
-          FirebaseFirestore.instance.collection('places').doc(placeId);
+      await FirebaseFirestore.instance
+          .collection('places')
+          .doc(oldPlaceName)
+          .delete();
 
-      // Update the document with the provided textual data
-      await placeRef.update(updatedData);
+      await FirebaseFirestore.instance
+          .collection('places')
+          .doc(newPlaceName)
+          .set({
+        'id': widget.editUploadedPlace['id'],
+        'name': newPlaceName,
+        'openingTime': _openingTime!.format(context).toString(),
+        'closingTime': _closingTime!.format(context).toString(),
+        'lat': double.parse(lat),
+        'lng': double.parse(lng),
+        'description': descController.text,
+        'panorama': new360ImageUrls.isNotEmpty ? new360ImageUrls : image360Url,
+        'pictures': newImageUrls.isNotEmpty ? newImageUrls : imageUrl,
+        'searchKeywords': searchKeywords,
+        'uid': user!.uid,
+      });
 
-      // Handle picture updates
-      if (updatedPictures.isNotEmpty) {
-        // Delete the old pictures from Firebase Storage
-        final storage = FirebaseStorage.instance;
-        final folderRef = storage.ref().child('places').child(placeId);
+      // Close the progress dialog
+      Navigator.of(scaffoldContext).pop();
+      Navigator.of(scaffoldContext).pop();
 
-        final ListResult result = await folderRef.listAll();
-        for (final item in result.items) {
-          await item.delete();
-        }
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Place updated successfully'),
+        ),
+      );
+    } catch (error) {
+      // Handle errors here
+      print('Error updating place: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred while updating the place'),
+        ),
+      );
+    }
+  }
 
-        // Upload the new pictures to Firebase Storage
-        for (final imageUrl in updatedPictures) {
-          final pictureRef =
-              storage.ref().child('places').child(placeId).child(imageUrl);
-          // Upload the image here using `putFile` or `putData` methods
-          // For example, you can use `putFile(File(imageUrl))` to upload a file
-          // You can also handle any necessary error checking during the upload
+  Future<void> renameFolder(String oldFolderName, String newFolderName) async {
+    final FirebaseStorage storage = FirebaseStorage.instance;
+
+    try {
+      final Reference oldSubfolderRef =
+          storage.ref().child('places').child(oldFolderName).child('images');
+      final Reference newSubfolderRef =
+          storage.ref().child('places').child(newFolderName).child('images');
+
+      // List all items (files) in the old subfolder
+      final ListResult oldSubfolderItems = await oldSubfolderRef.list();
+
+      if (oldSubfolderItems.items.isNotEmpty) {
+        // Create a Dio instance
+        final Dio dio = Dio();
+
+        // Flag to track if an error occurs during the loop
+        bool errorOccurred = false;
+
+        // Move each item (file) to the new subfolder while retaining its original name
+        for (final item in oldSubfolderItems.items) {
+          final String itemName = item.name;
+
+          // Get the download URL of the item (file)
+          final String downloadUrl = await item.getDownloadURL();
+
+          // Download the file using Dio
+          final Response<List<int>> response = await dio.get<List<int>>(
+            downloadUrl,
+            options: Options(responseType: ResponseType.bytes),
+          );
+
+          // Check if the download was successful
+          if (response.statusCode == 200) {
+            // Upload the downloaded file to the new location
+            final Reference newItemRef = newSubfolderRef.child(itemName);
+            try {
+              await newItemRef.putData(Uint8List.fromList(response.data!));
+
+              // Delete the item (file) from the old location
+              await item.delete();
+            } catch (e) {
+              print('Error uploading file: $e');
+              errorOccurred = true; // Set error flag
+              break; // Exit the loop
+            }
+          }
         }
       }
 
-      // You can also fetch the updated data and handle it as needed
-      final updatedPlaceSnapshot = await placeRef.get();
-      final updatedPlaceData = updatedPlaceSnapshot.data();
+      // After all files have been moved, delete the old subfolder if it's not empty
+      final updatedOldSubfolderItems = await oldSubfolderRef.list();
+      if (updatedOldSubfolderItems.items.isEmpty) {
+        await oldSubfolderRef.delete();
+      }
+    } catch (e) {
+      // Handle errors if necessary
+      print('Error renaming folders: $e');
+    }
 
-      // Handle the updated data if needed
+    try {
+      final Reference oldSubfolderRef =
+          storage.ref().child('places').child(oldFolderName).child('panorama');
+      final Reference newSubfolderRef =
+          storage.ref().child('places').child(newFolderName).child('panorama');
 
-      // You can show a success message to the user
-      print('Place updated successfully');
-    } catch (error) {
-      // Handle any errors that occur during the update process
-      print('Error editing place: $error');
-      // You can show an error message to the user if needed.
+      // List all items (files) in the old subfolder
+      final ListResult oldSubfolderItems = await oldSubfolderRef.list();
+
+      if (oldSubfolderItems.items.isNotEmpty) {
+        // Create a Dio instance
+        final Dio dio = Dio();
+
+        // Flag to track if an error occurs during the loop
+        bool errorOccurred = false;
+
+        // Move each item (file) to the new subfolder while retaining its original name
+        for (final item in oldSubfolderItems.items) {
+          final String itemName = item.name;
+
+          // Get the download URL of the item (file)
+          final String downloadUrl = await item.getDownloadURL();
+
+          // Download the file using Dio
+          final Response<List<int>> response = await dio.get<List<int>>(
+            downloadUrl,
+            options: Options(responseType: ResponseType.bytes),
+          );
+
+          // Check if the download was successful
+          if (response.statusCode == 200) {
+            // Upload the downloaded file to the new location
+            final Reference newItemRef = newSubfolderRef.child(itemName);
+            try {
+              await newItemRef.putData(Uint8List.fromList(response.data!));
+
+              // Delete the item (file) from the old location
+              await item.delete();
+            } catch (e) {
+              print('Error uploading file: $e');
+              errorOccurred = true; // Set error flag
+              break; // Exit the loop
+            }
+          }
+        }
+      }
+
+      // After all files have been moved, delete the old subfolder if it's not empty
+      final updatedOldSubfolderItems = await oldSubfolderRef.list();
+      if (updatedOldSubfolderItems.items.isEmpty) {
+        await oldSubfolderRef.delete();
+      }
+    } catch (e) {
+      // Handle errors if necessary
+      print('Error renaming folders: $e');
     }
   }
 }
