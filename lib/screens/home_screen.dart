@@ -540,7 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     } else {
                       return const Center(
                         child: CircularProgressIndicator(
-                          color: const Color.fromARGB(255, 70, 159, 209),
+                          color: Color.fromARGB(255, 70, 159, 209),
                         ),
                       );
                     }

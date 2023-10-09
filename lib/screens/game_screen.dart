@@ -1,5 +1,7 @@
+import 'package:a_tour_action/screens/game%20tab/game_quiz_screen.dart';
 import 'package:a_tour_action/widgets/bottom_navigation.dart';
 import 'package:a_tour_action/widgets/camera.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 class GameScreen extends StatefulWidget {
@@ -10,6 +12,38 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
+  final AudioPlayer audioPlayer = AudioPlayer();
+  bool isPlaying = false;
+
+  void playGameShowSound() async {
+    await audioPlayer
+        .play(AssetSource('audio/y2mate.com - The Game Show Theme Music.mp3'));
+    setState(() {
+      isPlaying = true;
+    });
+  }
+
+  void stopGameShowSound() async {
+    await audioPlayer.stop();
+    setState(() {
+      isPlaying = false;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    playGameShowSound();
+  }
+
+  @override
+  void dispose() {
+    audioPlayer
+        .dispose(); // Stop and release the audio player when the widget is disposed
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +68,13 @@ class _GameScreenState extends State<GameScreen> {
                           ),
                           // const SizedBox( height: 15,),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) =>
+                                          const GameQuizScreen()));
+                            },
                             child: const Text(
                               'Take Quiz!',
                               style: TextStyle(
@@ -62,7 +102,19 @@ class _GameScreenState extends State<GameScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Camera(),
       bottomNavigationBar: BottomNavigation(
-          homeFill: false, gameFill: true, placeFill: false, menuFill: false),
+        homeFill: false,
+        gameFill: true,
+        placeFill: false,
+        menuFill: false,
+        onGameFillChanged: (bool newValue) {
+          if (newValue) {
+            // Play the game show sound when gameFill is set to true
+            playGameShowSound();
+          } else {
+            stopGameShowSound();
+          }
+        },
+      ),
     );
   }
 }
