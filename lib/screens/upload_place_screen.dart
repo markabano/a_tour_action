@@ -402,7 +402,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       setState(() {
         _closingTime = value!;
       });
-    });
+    }); 
   }
 
   Future<void> uploadPlace(BuildContext context) async {
@@ -581,11 +581,11 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         'name': nameController.text,
         'openingTime': _openingTime!.format(context).toString(),
         'closingTime': _closingTime!.format(context).toString(),
-        'lat': int.parse(lat),
-        'lng': int.parse(lng),
+        'lat': double.parse(lat),
+        'lng': double.parse(lng),
         'description': descController.text,
         'pictures': imageUrl,
-        'panorama': image360Url,
+        'panorama': [image360Url],
         'searchKeywords': searchKeywords,
         'uid': user!.uid,
       });
