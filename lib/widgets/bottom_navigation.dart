@@ -9,12 +9,15 @@ class BottomNavigation extends StatelessWidget {
   final bool gameFill;
   final bool placeFill;
   final bool menuFill;
+  final ValueChanged<bool>? onGameFillChanged;
+
   const BottomNavigation(
       {super.key,
       required this.placeFill,
       required this.homeFill,
       required this.gameFill,
-      required this.menuFill});
+      required this.menuFill,
+      this.onGameFillChanged,});
 
   @override
   Widget build(BuildContext context) {
