@@ -262,11 +262,16 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
 
         // Delete associated photos from Firebase Storage
         final storage = FirebaseStorage.instance;
-        final folderRef = storage.ref().child('places').child(placeName);
+        final folderRefs = [
+          storage.ref().child('places').child(placeName).child('images'),
+          storage.ref().child('places').child(placeName).child('panorama'),
+        ];
 
-        final ListResult result = await folderRef.listAll();
-        for (final item in result.items) {
-          await item.delete();
+        for (final folderRef in folderRefs) {
+          final ListResult result = await folderRef.listAll();
+          for (final item in result.items) {
+            await item.delete();
+          }
         }
       } else {
         // Handle the case where the place document is not found
