@@ -33,18 +33,24 @@ class _GameScreenState extends State<GameScreen> {
                             height: MediaQuery.of(context).size.width * 0.9,
                           ),
                           // const SizedBox( height: 15,),
-                          ElevatedButton(onPressed: (){}, child: const Text('Take Quiz!',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500
-                          ),),),
-                          ElevatedButton(onPressed: (){}, child: const Text('Options',style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500
-                          ),),),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Take Quiz!',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text(
+                              'Options',
+                              style: TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.w500),
+                            ),
+                          ),
                         ],
                       ),
-                     
                     ],
                   ),
                 ),
