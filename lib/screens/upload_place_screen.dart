@@ -1,13 +1,10 @@
 import 'dart:io';
-import 'package:a_tour_action/screens/dashboard_screen.dart';
-import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 
 class UploadPlaceScreen extends StatefulWidget {
   const UploadPlaceScreen({super.key, this.editUploadedPlace});
@@ -389,7 +386,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       initialTime: TimeOfDay.now(),
     ).then((value) {
       setState(() {
-        _openingTime = value!;
+        _openingTime = value;
       });
     });
   }
@@ -400,9 +397,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       initialTime: TimeOfDay.now(),
     ).then((value) {
       setState(() {
-        _closingTime = value!;
+        _closingTime = value;
       });
-    }); 
+    });
   }
 
   Future<void> uploadPlace(BuildContext context) async {
