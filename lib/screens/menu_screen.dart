@@ -59,22 +59,22 @@ class _MenuScreenState extends State<MenuScreen> {
                                       3, // Adjust the width of the border as needed
                                 ),
                               ),
-                              child: CachedNetworkImage(
+                              child: _imageUrl.isNotEmpty ? CachedNetworkImage(
                                 imageBuilder: (context, imageProvider) =>
                                     CircleAvatar(
                                   radius:
                                       48, // Adjust the radius to fit within the border
-                                  backgroundImage: _imageUrl.isNotEmpty
-                                      ? imageProvider
-                                      : null,
+                                  backgroundImage: 
+                                      imageProvider,
+                                      
                                   backgroundColor: Colors
                                       .transparent, // Set a transparent background color
-                                  child: _imageUrl.isEmpty
-                                      ? Icon(
-                                          Icons.person,
-                                          size: 48,
-                                        )
-                                      : null,
+                                  // child: _imageUrl.isEmpty
+                                  //     ? Icon(
+                                  //         Icons.person,
+                                  //         size: 48,
+                                  //       )
+                                  //     : null,
                                 ),
                                 imageUrl: _imageUrl,
                                 progressIndicatorBuilder:
@@ -83,7 +83,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                             value: downloadProgress.progress),
                                 errorWidget: (context, url, error) =>
                                     Icon(Icons.error),
-                              ),
+                              )
                               // CircleAvatar(
                               //   radius:
                               //       48, // Adjust the radius to fit within the border
@@ -99,6 +99,12 @@ class _MenuScreenState extends State<MenuScreen> {
                               //         )
                               //       : null, // Show the Icon only when _imageUrl is empty
                               // ),
+
+                              : CircleAvatar(
+                                      radius: 50,
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 50,                                      ),)
                             ),
                           ),
                           const SizedBox(width: 20),
