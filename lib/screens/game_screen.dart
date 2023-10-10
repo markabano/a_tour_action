@@ -1,3 +1,4 @@
+import 'package:a_tour_action/screens/game%20tab/category_screen.dart';
 import 'package:a_tour_action/screens/game%20tab/game_quiz_screen.dart';
 import 'package:a_tour_action/widgets/bottom_navigation.dart';
 import 'package:a_tour_action/widgets/camera.dart';
@@ -73,7 +74,7 @@ class _GameScreenState extends State<GameScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (ctx) =>
-                                          const GameQuizScreen()));
+                                          const CategoryScreen()));
                             },
                             child: const Text(
                               'Take Quiz!',
