@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:a_tour_action/widgets/imageDisplay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,6 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+
+class ImageData {
+  final String? imageUrl;
+  final File? imageFile;
+
+  ImageData({this.imageUrl, this.imageFile});
+}
 
 class UploadPlaceScreen extends StatefulWidget {
   const UploadPlaceScreen({super.key, this.editUploadedPlace});
@@ -24,6 +32,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
   File? _image360;
   List<String> imageUrl = [];
   List<String> image360Url = [];
+  List<String> imagesToDelete = [];
+  List<String> image360ToDelete = [];
+  List<ImageData> imagesData = [];
 
   final nameController = TextEditingController();
   final latController = TextEditingController();
@@ -66,6 +77,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
 
       if (place['pictures'] != null) {
         imageUrl = List<String>.from(place['pictures']);
+        // Populate the imagesData list with both URL and File images
+        imagesData.addAll(imageUrl.map((url) => ImageData(imageUrl: url)));
+        imagesData.addAll(_images.map((file) => ImageData(imageFile: file)));
       }
     }
   }
@@ -221,6 +235,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                             onPressed: () {
                               // Remove the selected image at this index
                               setState(() {
+                                image360ToDelete.add(image360Url[0]);
                                 image360Url.removeAt(0);
                               });
                             },
@@ -285,15 +300,15 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                       crossAxisCount: 3,
                     ),
                     itemCount: imageUrl.isNotEmpty
-                        ? imageUrl.length < 5
-                            ? imageUrl.length + 1
-                            : imageUrl.length
+                        ? imagesData.length < 5
+                            ? imagesData.length + 1
+                            : imagesData.length
                         : _images.length < 5
                             ? _images.length + 1
                             : _images.length,
                     itemBuilder: (context, index) {
                       if (imageUrl.isNotEmpty) {
-                        if (index == imageUrl.length && imageUrl.length < 5) {
+                        if (index == imagesData.length) {
                           return Center(
                             child: IconButton(
                               onPressed: chooseImage,
@@ -301,30 +316,24 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                             ),
                           );
                         } else {
-                          return Stack(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(imageUrl[index]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    // Remove the selected image at this index
-                                    setState(() {
-                                      imageUrl.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.remove_circle),
-                                ),
-                              ),
-                            ],
+                          return ImageDisplay(
+                            imageUrl: imagesData[index].imageUrl,
+                            imageFile: imagesData[index].imageFile,
+                            onRemove: () {
+                              // Handle image removal here
+                              setState(() {
+                                if (imagesData[index].imageUrl != null) {
+                                  // It's a URL image
+                                  imagesToDelete
+                                      .add(imagesData[index].imageUrl!);
+                                  imageUrl.remove(imagesData[index].imageUrl!);
+                                } else {
+                                  // It's a local file image
+                                  _images.remove(imagesData[index].imageFile!);
+                                }
+                                imagesData.removeAt(index);
+                              });
+                            },
                           );
                         }
                       } else {
@@ -381,7 +390,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     }
 
     setState(() {
-      _images.add(File(pickedFile.path));
+      final newImage = File(pickedFile.path);
+      _images.add(newImage);
+      imagesData.add(ImageData(imageFile: newImage)); // Add to imagesData
     });
   }
 
@@ -396,7 +407,6 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     setState(() {
       _image360 = File(pickedFile.path);
     });
-
     print(_image360);
   }
 
@@ -424,6 +434,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
 
   Future<void> _uploadPlace(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
     final String placeName = nameController.text;
     final String lat = latController.text;
     final String lng = lngController.text;
@@ -488,7 +499,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         final Reference ref = FirebaseStorage.instance
             .ref()
             .child('places')
-            .child(placeName)
+            .child(uid)
             .child('panorama')
             .child(fileName);
 
@@ -543,7 +554,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         final Reference ref = FirebaseStorage.instance
             .ref()
             .child('places')
-            .child(placeName)
+            .child(uid)
             .child('images')
             .child(fileName);
 
@@ -611,6 +622,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
 
   Future<void> _editPlace(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
     final String oldPlaceName = widget.editUploadedPlace['name'];
     final String newPlaceName = nameController.text;
     final String lat = latController.text;
@@ -650,7 +662,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       final Reference ref = FirebaseStorage.instance
           .ref()
           .child('places')
-          .child(oldPlaceName)
+          .child(uid)
           .child('panorama')
           .child(fileName);
 
@@ -676,6 +688,23 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       // No new 360-degree image selected, so use the existing URL if available
     }
 
+    try {
+      // Delete old 360 image from Firebase Storage
+      for (final String image360 in image360ToDelete) {
+        final Reference image360Ref =
+            FirebaseStorage.instance.refFromURL(image360);
+        await image360Ref.delete();
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete old images'),
+        ),
+      );
+      Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+      return;
+    }
+
     // Image Upload (for new images)
     for (var image in _images) {
       // Unique file name
@@ -685,7 +714,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       final Reference ref = FirebaseStorage.instance
           .ref()
           .child('places')
-          .child(oldPlaceName)
+          .child(uid)
           .child('images')
           .child(fileName);
 
@@ -709,9 +738,21 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
       }
     }
 
-    // Rename the folder if the place name has changed
-    if (oldPlaceName != newPlaceName) {
-      await renameFolder(oldPlaceName, newPlaceName);
+    try {
+      // Delete old images from Firebase Storage
+      for (final String imageToDelete in imagesToDelete) {
+        final Reference imageToDeleteRef =
+            FirebaseStorage.instance.refFromURL(imageToDelete);
+        await imageToDeleteRef.delete();
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete old images'),
+        ),
+      );
+      Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+      return;
     }
 
     // Update the place document with the new data and the new place name
@@ -737,7 +778,8 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         'lng': double.parse(lng),
         'description': descController.text,
         'panorama': new360ImageUrls.isNotEmpty ? new360ImageUrls : image360Url,
-        'pictures': newImageUrls.isNotEmpty ? newImageUrls : imageUrl,
+        'pictures':
+            newImageUrls.isNotEmpty ? newImageUrls + imageUrl : imageUrl,
         'searchKeywords': searchKeywords,
         'uid': user!.uid,
       });
@@ -760,124 +802,6 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
           content: Text('An error occurred while updating the place'),
         ),
       );
-    }
-  }
-
-  Future<void> renameFolder(String oldFolderName, String newFolderName) async {
-    final FirebaseStorage storage = FirebaseStorage.instance;
-
-    try {
-      final Reference oldSubfolderRef =
-          storage.ref().child('places').child(oldFolderName).child('images');
-      final Reference newSubfolderRef =
-          storage.ref().child('places').child(newFolderName).child('images');
-
-      // List all items (files) in the old subfolder
-      final ListResult oldSubfolderItems = await oldSubfolderRef.list();
-
-      if (oldSubfolderItems.items.isNotEmpty) {
-        // Create a Dio instance
-        final Dio dio = Dio();
-
-        // Flag to track if an error occurs during the loop
-        bool errorOccurred = false;
-
-        // Move each item (file) to the new subfolder while retaining its original name
-        for (final item in oldSubfolderItems.items) {
-          final String itemName = item.name;
-
-          // Get the download URL of the item (file)
-          final String downloadUrl = await item.getDownloadURL();
-
-          // Download the file using Dio
-          final Response<List<int>> response = await dio.get<List<int>>(
-            downloadUrl,
-            options: Options(responseType: ResponseType.bytes),
-          );
-
-          // Check if the download was successful
-          if (response.statusCode == 200) {
-            // Upload the downloaded file to the new location
-            final Reference newItemRef = newSubfolderRef.child(itemName);
-            try {
-              await newItemRef.putData(Uint8List.fromList(response.data!));
-
-              // Delete the item (file) from the old location
-              await item.delete();
-            } catch (e) {
-              print('Error uploading file: $e');
-              errorOccurred = true; // Set error flag
-              break; // Exit the loop
-            }
-          }
-        }
-      }
-
-      // After all files have been moved, delete the old subfolder if it's not empty
-      final updatedOldSubfolderItems = await oldSubfolderRef.list();
-      if (updatedOldSubfolderItems.items.isEmpty) {
-        await oldSubfolderRef.delete();
-      }
-    } catch (e) {
-      // Handle errors if necessary
-      print('Error renaming folders: $e');
-    }
-
-    try {
-      final Reference oldSubfolderRef =
-          storage.ref().child('places').child(oldFolderName).child('panorama');
-      final Reference newSubfolderRef =
-          storage.ref().child('places').child(newFolderName).child('panorama');
-
-      // List all items (files) in the old subfolder
-      final ListResult oldSubfolderItems = await oldSubfolderRef.list();
-
-      if (oldSubfolderItems.items.isNotEmpty) {
-        // Create a Dio instance
-        final Dio dio = Dio();
-
-        // Flag to track if an error occurs during the loop
-        bool errorOccurred = false;
-
-        // Move each item (file) to the new subfolder while retaining its original name
-        for (final item in oldSubfolderItems.items) {
-          final String itemName = item.name;
-
-          // Get the download URL of the item (file)
-          final String downloadUrl = await item.getDownloadURL();
-
-          // Download the file using Dio
-          final Response<List<int>> response = await dio.get<List<int>>(
-            downloadUrl,
-            options: Options(responseType: ResponseType.bytes),
-          );
-
-          // Check if the download was successful
-          if (response.statusCode == 200) {
-            // Upload the downloaded file to the new location
-            final Reference newItemRef = newSubfolderRef.child(itemName);
-            try {
-              await newItemRef.putData(Uint8List.fromList(response.data!));
-
-              // Delete the item (file) from the old location
-              await item.delete();
-            } catch (e) {
-              print('Error uploading file: $e');
-              errorOccurred = true; // Set error flag
-              break; // Exit the loop
-            }
-          }
-        }
-      }
-
-      // After all files have been moved, delete the old subfolder if it's not empty
-      final updatedOldSubfolderItems = await oldSubfolderRef.list();
-      if (updatedOldSubfolderItems.items.isEmpty) {
-        await oldSubfolderRef.delete();
-      }
-    } catch (e) {
-      // Handle errors if necessary
-      print('Error renaming folders: $e');
     }
   }
 }
