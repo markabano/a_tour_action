@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:a_tour_action/screens/place_info_screen.dart';
 import 'package:a_tour_action/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,6 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
       .doc(FirebaseAuth.instance.currentUser!.uid)
       .collection('favorites')
       .snapshots();
+
+  var featuredPlaces =
+      FirebaseFirestore.instance.collection('places').snapshots();
+
+  List<DocumentSnapshot> shuffleList(List<DocumentSnapshot> list) {
+    var random = new Random();
+    for (var i = list.length - 1; i > 0; i--) {
+      var n = random.nextInt(i + 1);
+      var temp = list[i];
+      list[i] = list[n];
+      list[n] = temp;
+    }
+    return list;
+  }
 
   @override
   void initState() {
@@ -238,7 +253,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             .horizontal, // Set the scroll direction to horizontal
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot place = snapshot.data!.docs[index];
+                          DocumentSnapshot place =
+                              shuffleList(snapshot.data!.docs)[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -383,24 +399,27 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: double.infinity,
                 height: 200,
-                child: StreamBuilder(
-                  stream: favorites,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: featuredPlaces,
                   builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasData) {
+                      List<DocumentSnapshot> places = snapshot.data!.docs;
+                      places = shuffleList(
+                          places); // Shuffle the list of featured places
                       return ListView.builder(
                         shrinkWrap: true,
                         scrollDirection: Axis
                             .horizontal, // Set the scroll direction to horizontal
-                        itemCount: snapshot.data!.docs.length,
+                        itemCount: 3,
                         itemBuilder: (context, index) {
-                          DocumentSnapshot place = snapshot.data!.docs[index];
+                          DocumentSnapshot place = places[index];
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => PlaceInfoScreen(
-                                    place: place['data'],
+                                    place: place.data(),
                                   ),
                                 ),
                               );
@@ -427,8 +446,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(5),
                                             child: CachedNetworkImage(
-                                              imageUrl: place['data']
-                                                  ['pictures'][0],
+                                              imageUrl: place['pictures'][0],
                                               height: 150,
                                               width: 150,
                                               fit: BoxFit.cover,
@@ -453,8 +471,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(5),
                                                 child: CachedNetworkImage(
-                                                  imageUrl: place['data']
-                                                      ['pictures'][1],
+                                                  imageUrl: place['pictures']
+                                                      [1],
                                                   height: 70,
                                                   width: 100,
                                                   fit: BoxFit.cover,
@@ -484,8 +502,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(5),
                                                 child: CachedNetworkImage(
-                                                  imageUrl: place['data']
-                                                      ['pictures'][2],
+                                                  imageUrl: place['pictures']
+                                                      [2],
                                                   height: 70,
                                                   width: 100,
                                                   fit: BoxFit.cover,
@@ -525,7 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Padding(
                                       padding: const EdgeInsets.only(left: 8.0),
                                       child: Text(
-                                        place['data']['name'],
+                                        place['name'],
                                         textAlign: TextAlign.left,
                                         style: TextStyle(fontSize: 18),
                                       ),
