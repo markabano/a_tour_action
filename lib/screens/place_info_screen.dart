@@ -1,4 +1,5 @@
- import 'dart:async';
+import 'dart:async';
+import 'package:a_tour_action/screens/home_screen.dart';
 import 'package:a_tour_action/screens/screenFor_360view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -8,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class PlaceInfoScreen extends StatefulWidget {
-  const PlaceInfoScreen({super.key, required this.place});
+  const PlaceInfoScreen({super.key, required this.place, this.fromHomeScreen});
   final dynamic place;
+  final bool? fromHomeScreen;
 
   @override
   State<PlaceInfoScreen> createState() => _PlaceInfoScreenState();
@@ -95,6 +97,15 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                                   addFavorite();
                                 } else {
                                   removeFavorite();
+                                }
+
+                                if (widget.fromHomeScreen == true) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomeScreen(),
+                                    ),
+                                  );
                                 }
                               },
                               icon: isFavorite == true
@@ -186,8 +197,8 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  ScreenFor360View(place: widget.place, index: 0 ),
+                              builder: (context) => ScreenFor360View(
+                                  place: widget.place, index: 0),
                             ));
                       },
                       style: OutlinedButton.styleFrom(
