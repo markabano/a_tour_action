@@ -9,9 +9,10 @@ class GameQuizScreen extends StatefulWidget {
 }
 
 class _GameQuizScreenState extends State<GameQuizScreen> {
-  List<Map<String, dynamic>> questions = []; // List to store the questions
-  int currentQuestionIndex = 0; // Index of the current question
-  String selectedAnswer = ""; // Store the selected answer
+  List<Map<String, dynamic>> questions = [];
+  int currentQuestionIndex = 0;
+  String selectedAnswer = "";
+  bool isCorrectAnswer = false;
 
   @override
   void initState() {
@@ -24,10 +25,11 @@ class _GameQuizScreenState extends State<GameQuizScreen> {
             'question': doc['question'],
             'options': doc['options'],
             'correctAnswer': doc['correctAnswer'],
+            'info': doc['info'], // Additional information related to the question
           };
         }).toList();
 
-        // questions.shuffle();
+        questions.shuffle();
         setState(() {
           currentQuestionIndex = 0;
         });
@@ -44,8 +46,23 @@ class _GameQuizScreenState extends State<GameQuizScreen> {
   void showNextQuestion() {
     setState(() {
       selectedAnswer = "";
+      isCorrectAnswer = false;
       currentQuestionIndex++;
     });
+  }
+
+  void checkAnswer() {
+    if (selectedAnswer == questions[currentQuestionIndex]['correctAnswer']) {
+      // User selected the correct answer
+      setState(() {
+        isCorrectAnswer = true;
+      });
+    } else {
+      // User selected the wrong answer
+      setState(() {
+        isCorrectAnswer = false;
+      });
+    }
   }
 
   @override
@@ -57,12 +74,12 @@ class _GameQuizScreenState extends State<GameQuizScreen> {
           child: Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.blueAccent,
-                  ),
-                height: MediaQuery.of(context).size.width * 0.9,
+                ),
+                padding: const EdgeInsets.all(8),
+                height: MediaQuery.of(context).size.width * 0.6,
                 
                 child: Center(
                   child: Text(
@@ -88,12 +105,46 @@ class _GameQuizScreenState extends State<GameQuizScreen> {
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 15,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                onPressed: () {
+                  checkAnswer();
+                },
+                child: const Text("Submit Answer"),
+              ),
+              
               ElevatedButton(
-                // showNextQuestion
-                onPressed: (){},
+                onPressed: showNextQuestion,
                 child: const Text("Next Question"),
               ),
+                ],
+              ),
+              if (selectedAnswer.isNotEmpty)
+                isCorrectAnswer
+                    ? Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              "You got it right! Here's some information:\n\n${questions[currentQuestionIndex]['info']}",
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                      ),
+                    )
+                    : Expanded(
+                      child: SingleChildScrollView(
+                        child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              "Sorry, that's incorrect. Here's some information:\n\n${questions[currentQuestionIndex]['info']}",
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                      ),
+                    ),
             ],
           ),
         ),

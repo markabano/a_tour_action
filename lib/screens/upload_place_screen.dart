@@ -1,10 +1,21 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:a_tour_action/widgets/imageDisplay.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+
+class ImageData {
+  final String? imageUrl;
+  final File? imageFile;
+
+  ImageData({this.imageUrl, this.imageFile});
+}
 
 class UploadPlaceScreen extends StatefulWidget {
   const UploadPlaceScreen({super.key, this.editUploadedPlace});
@@ -20,7 +31,10 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
   List<File> _images = [];
   File? _image360;
   List<String> imageUrl = [];
-  String image360Url = '';
+  List<String> image360Url = [];
+  List<String> imagesToDelete = [];
+  List<String> image360ToDelete = [];
+  List<ImageData> imagesData = [];
 
   final nameController = TextEditingController();
   final latController = TextEditingController();
@@ -58,11 +72,14 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
               minute: 59); // Default to 11:59 PM if null or parsing fails
 
       if (place['panorama'] != null) {
-        image360Url = place['panorama'];
+        image360Url = List<String>.from(place['panorama']);
       }
 
       if (place['pictures'] != null) {
         imageUrl = List<String>.from(place['pictures']);
+        // Populate the imagesData list with both URL and File images
+        imagesData.addAll(imageUrl.map((url) => ImageData(imageUrl: url)));
+        imagesData.addAll(_images.map((file) => ImageData(imageFile: file)));
       }
     }
   }
@@ -78,20 +95,37 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
           actions: [
             IconButton(
               onPressed: () {
-                if (nameController.text.isEmpty ||
-                    latController.text.isEmpty ||
-                    lngController.text.isEmpty ||
-                    descController.text.isEmpty ||
-                    _images.isEmpty ||
-                    _images.length < 5) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill all the fields'),
-                    ),
-                  );
-                  return;
+                if (widget.editUploadedPlace == null) {
+                  if (nameController.text.isEmpty ||
+                      latController.text.isEmpty ||
+                      lngController.text.isEmpty ||
+                      descController.text.isEmpty ||
+                      _images.isEmpty ||
+                      _images.length < 5) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill all the fields'),
+                      ),
+                    );
+                    return;
+                  } else {
+                    _uploadPlace(context);
+                  }
+                } else {
+                  if (nameController.text.isEmpty ||
+                      latController.text.isEmpty ||
+                      lngController.text.isEmpty ||
+                      descController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill all the fields'),
+                      ),
+                    );
+                    return;
+                  } else {
+                    _editPlace(context);
+                  }
                 }
-                uploadPlace(context);
               },
               icon: const Icon(Icons.save),
             ),
@@ -190,7 +224,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                           decoration: BoxDecoration(
                             image: DecorationImage(
                               image: NetworkImage(
-                                  image360Url), // Use the selected image
+                                  image360Url[0]), // Use the selected image
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -201,7 +235,8 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                             onPressed: () {
                               // Remove the selected image at this index
                               setState(() {
-                                image360Url = '';
+                                image360ToDelete.add(image360Url[0]);
+                                image360Url.removeAt(0);
                               });
                             },
                             icon: const Icon(Icons.remove_circle),
@@ -265,15 +300,15 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                       crossAxisCount: 3,
                     ),
                     itemCount: imageUrl.isNotEmpty
-                        ? imageUrl.length < 5
-                            ? imageUrl.length + 1
-                            : imageUrl.length
+                        ? imagesData.length < 5
+                            ? imagesData.length + 1
+                            : imagesData.length
                         : _images.length < 5
                             ? _images.length + 1
                             : _images.length,
                     itemBuilder: (context, index) {
                       if (imageUrl.isNotEmpty) {
-                        if (index == imageUrl.length && imageUrl.length < 5) {
+                        if (index == imagesData.length) {
                           return Center(
                             child: IconButton(
                               onPressed: chooseImage,
@@ -281,30 +316,24 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                             ),
                           );
                         } else {
-                          return Stack(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                    image: NetworkImage(imageUrl[index]),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  onPressed: () {
-                                    // Remove the selected image at this index
-                                    setState(() {
-                                      imageUrl.removeAt(index);
-                                    });
-                                  },
-                                  icon: const Icon(Icons.remove_circle),
-                                ),
-                              ),
-                            ],
+                          return ImageDisplay(
+                            imageUrl: imagesData[index].imageUrl,
+                            imageFile: imagesData[index].imageFile,
+                            onRemove: () {
+                              // Handle image removal here
+                              setState(() {
+                                if (imagesData[index].imageUrl != null) {
+                                  // It's a URL image
+                                  imagesToDelete
+                                      .add(imagesData[index].imageUrl!);
+                                  imageUrl.remove(imagesData[index].imageUrl!);
+                                } else {
+                                  // It's a local file image
+                                  _images.remove(imagesData[index].imageFile!);
+                                }
+                                imagesData.removeAt(index);
+                              });
+                            },
                           );
                         }
                       } else {
@@ -361,7 +390,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     }
 
     setState(() {
-      _images.add(File(pickedFile.path));
+      final newImage = File(pickedFile.path);
+      _images.add(newImage);
+      imagesData.add(ImageData(imageFile: newImage)); // Add to imagesData
     });
   }
 
@@ -376,7 +407,6 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     setState(() {
       _image360 = File(pickedFile.path);
     });
-
     print(_image360);
   }
 
@@ -402,8 +432,9 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
     });
   }
 
-  Future<void> uploadPlace(BuildContext context) async {
+  Future<void> _uploadPlace(BuildContext context) async {
     final user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
     final String placeName = nameController.text;
     final String lat = latController.text;
     final String lng = lngController.text;
@@ -468,7 +499,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         final Reference ref = FirebaseStorage.instance
             .ref()
             .child('places')
-            .child(placeName)
+            .child(uid)
             .child('panorama')
             .child(fileName);
 
@@ -480,7 +511,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
           final imageUrlForImage = await ref.getDownloadURL();
 
           // Add the URL
-          image360Url = imageUrlForImage;
+          image360Url.add(imageUrlForImage);
 
           // Increment the uploaded images counter
           uploadedImages++;
@@ -523,7 +554,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         final Reference ref = FirebaseStorage.instance
             .ref()
             .child('places')
-            .child(placeName)
+            .child(uid)
             .child('images')
             .child(fileName);
 
@@ -582,55 +613,195 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         'lng': double.parse(lng),
         'description': descController.text,
         'pictures': imageUrl,
-        'panorama': [image360Url],
+        'panorama': image360Url,
         'searchKeywords': searchKeywords,
         'uid': user!.uid,
       });
     }
   }
 
-  Future<void> editPlace(String placeId, Map<String, dynamic> updatedData,
-      List<String> updatedPictures) async {
-    try {
-      final placeRef =
-          FirebaseFirestore.instance.collection('places').doc(placeId);
+  Future<void> _editPlace(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    final uid = user!.uid;
+    final String oldPlaceName = widget.editUploadedPlace['name'];
+    final String newPlaceName = nameController.text;
+    final String lat = latController.text;
+    final String lng = lngController.text;
 
-      // Update the document with the provided textual data
-      await placeRef.update(updatedData);
+    // Store the initial context in a variable
+    BuildContext scaffoldContext = context; // Use a different variable name
 
-      // Handle picture updates
-      if (updatedPictures.isNotEmpty) {
-        // Delete the old pictures from Firebase Storage
-        final storage = FirebaseStorage.instance;
-        final folderRef = storage.ref().child('places').child(placeId);
+    // Show a progress dialog
+    showDialog(
+      context: scaffoldContext,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Updating Place...'),
+              LinearProgressIndicator(),
+            ],
+          ),
+        );
+      },
+    );
 
-        final ListResult result = await folderRef.listAll();
-        for (final item in result.items) {
-          await item.delete();
-        }
+    // Initialize a list to store the new image URLs
+    List<String> newImageUrls = [];
 
-        // Upload the new pictures to Firebase Storage
-        for (final imageUrl in updatedPictures) {
-          final pictureRef =
-              storage.ref().child('places').child(placeId).child(imageUrl);
-          // Upload the image here using `putFile` or `putData` methods
-          // For example, you can use `putFile(File(imageUrl))` to upload a file
-          // You can also handle any necessary error checking during the upload
-        }
+    List<String> new360ImageUrls = [];
+
+    // Image360 Upload (if a new image is selected)
+    if (_image360 != null) {
+      // Unique file name
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Upload to Firebase
+      final Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('places')
+          .child(uid)
+          .child('panorama')
+          .child(fileName);
+
+      try {
+        // Store file in Firebase
+        await ref.putFile(_image360!);
+
+        // Get file URL
+        final imageUrlForImage = await ref.getDownloadURL();
+
+        // Add the URL
+        new360ImageUrls.add(imageUrlForImage);
+      } catch (error) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to upload 360-degree image'),
+          ),
+        );
+        Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+        return;
       }
+    } else {
+      // No new 360-degree image selected, so use the existing URL if available
+    }
 
-      // You can also fetch the updated data and handle it as needed
-      final updatedPlaceSnapshot = await placeRef.get();
-      final updatedPlaceData = updatedPlaceSnapshot.data();
-
-      // Handle the updated data if needed
-
-      // You can show a success message to the user
-      print('Place updated successfully');
+    try {
+      // Delete old 360 image from Firebase Storage
+      for (final String image360 in image360ToDelete) {
+        final Reference image360Ref =
+            FirebaseStorage.instance.refFromURL(image360);
+        await image360Ref.delete();
+      }
     } catch (error) {
-      // Handle any errors that occur during the update process
-      print('Error editing place: $error');
-      // You can show an error message to the user if needed.
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete old images'),
+        ),
+      );
+      Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+      return;
+    }
+
+    // Image Upload (for new images)
+    for (var image in _images) {
+      // Unique file name
+      final String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+
+      // Upload to Firebase
+      final Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('places')
+          .child(uid)
+          .child('images')
+          .child(fileName);
+
+      try {
+        // Store file in Firebase
+        await ref.putFile(File(image.path));
+
+        // Get file URL
+        final imageUrlForImage = await ref.getDownloadURL();
+
+        // Add the URL to the list
+        newImageUrls.add(imageUrlForImage);
+      } catch (error) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to upload image'),
+          ),
+        );
+        Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+        return;
+      }
+    }
+
+    try {
+      // Delete old images from Firebase Storage
+      for (final String imageToDelete in imagesToDelete) {
+        final Reference imageToDeleteRef =
+            FirebaseStorage.instance.refFromURL(imageToDelete);
+        await imageToDeleteRef.delete();
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete old images'),
+        ),
+      );
+      Navigator.of(scaffoldContext).pop(); // Close the progress dialog
+      return;
+    }
+
+    // Update the place document with the new data and the new place name
+    var searchKeywordsName = newPlaceName;
+    final List<String> searchKeywords =
+        searchKeywordsName.toLowerCase().split(' ');
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('places')
+          .doc(oldPlaceName)
+          .delete();
+
+      await FirebaseFirestore.instance
+          .collection('places')
+          .doc(newPlaceName)
+          .set({
+        'id': widget.editUploadedPlace['id'],
+        'name': newPlaceName,
+        'openingTime': _openingTime!.format(context).toString(),
+        'closingTime': _closingTime!.format(context).toString(),
+        'lat': double.parse(lat),
+        'lng': double.parse(lng),
+        'description': descController.text,
+        'panorama': new360ImageUrls.isNotEmpty ? new360ImageUrls : image360Url,
+        'pictures':
+            newImageUrls.isNotEmpty ? newImageUrls + imageUrl : imageUrl,
+        'searchKeywords': searchKeywords,
+        'uid': user!.uid,
+      });
+
+      // Close the progress dialog
+      Navigator.of(scaffoldContext).pop();
+      Navigator.of(scaffoldContext).pop();
+
+      // Show a success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Place updated successfully'),
+        ),
+      );
+    } catch (error) {
+      // Handle errors here
+      print('Error updating place: $error');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred while updating the place'),
+        ),
+      );
     }
   }
 }
