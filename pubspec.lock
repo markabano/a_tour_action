@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.5"
+  ar_quido:
+    dependency: "direct main"
+    description:
+      name: ar_quido
+      sha256: b07fdc8a05ec95dbeb08ded3e5924dfa0488304ff4bfc4748308253e9a2d94e5
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   arcore_flutter_plugin:
     dependency: "direct dev"
     description:
