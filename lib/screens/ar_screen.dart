@@ -1,3 +1,5 @@
+// ignore_for_file: camel_case_types
+
 import 'package:ar_quido/ar_quido.dart';
 import 'package:flutter/material.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
@@ -15,6 +17,7 @@ class AR_core extends StatefulWidget {
 class _AR_coreState extends State<AR_core> {
   String? _recognizedImage;
   ArCoreController? augmentedRealityCoreController;
+  bool scanned = false;
 
   augmentedRealityViewCreated(ArCoreController coreController) {
     augmentedRealityCoreController = coreController;
@@ -51,6 +54,7 @@ class _AR_coreState extends State<AR_core> {
     }
     setState(() {
       _recognizedImage = imageName;
+      scanned = true;
     });
   }
 
@@ -58,7 +62,7 @@ class _AR_coreState extends State<AR_core> {
     if (imageName != null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Tapped on image: $imageName'),
+          content: Text('Tapped on image: $imageName'), 
           duration: const Duration(milliseconds: 1500),
         ),
       );
@@ -66,30 +70,42 @@ class _AR_coreState extends State<AR_core> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+
+    augmentedRealityCoreController?.dispose();
+    // _AR_coreState().dispose();
+    
+    super.dispose();
+    // scanned=false;
+    // AR_core().dispose;
+    
+  //   augmentedRealityViewCreated;
+  //   augmentedRealityCoreController;
+  // // displayAr3D(coreController)
+  // scanned.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home:  Scaffold(  
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
         body: Builder(
           builder: (context) {
-            return Stack(
-              children: [
-                 ArCoreView(
+            return  
+            scanned==true ? 
+            ArCoreView(
           onArCoreViewCreated: augmentedRealityViewCreated,
-        ),
+        ):
                 ARQuidoView(
                   // onViewCreated: augmentedRealityViewCreated,
-                  referenceImageNames: const ['applandroid'],
+                  referenceImageNames: const ['applandroid','lionhead','test','360'],
                   onImageDetected: (imageName) =>
                       _onImageDetected(context, imageName),
                   onDetectedImageTapped: (imageName) =>
                       _onDetectedImageTapped(context, imageName),
-                ),
-              ],
-            );
+                );
           },
         ),
       ),

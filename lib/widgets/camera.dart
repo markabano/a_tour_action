@@ -11,7 +11,9 @@ class Camera extends StatelessWidget {
     return FloatingActionButton(
       backgroundColor: Color.fromARGB(255, 70, 159, 209),
       onPressed: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => ar_core(),));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AR_core(
+          // scanned: false
+        ),));
       },
       child: const Icon(Icons.camera_alt_outlined),
     );
