@@ -1,5 +1,4 @@
 import 'package:a_tour_action/screens/game%20tab/game_quiz_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // Import the Firestore package
 import 'package:flutter/material.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -10,33 +9,6 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  List<Map<String, dynamic>> categories = []; // List to store category data
-  String selectedCategory = ""; // Store the selected category
-
-  @override
-  void initState() {
-    super.initState();
-    // Fetch category data from Firestore
-    FirebaseFirestore.instance.collection('categories').get().then((querySnapshot) {
-      if (querySnapshot.docs.isNotEmpty) {
-        setState(() {
-          categories = querySnapshot.docs.map((doc) {
-            return {
-              'name': doc['name'],
-              'imagePath': doc['imagePath'],
-            };
-          }).toList();
-        });
-      }
-    });
-  }
-
-  void handleCategoryTap(int index) {
-    setState(() {
-      selectedCategory = categories[index]['name']; // Set the selected category based on the tapped image index
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,49 +19,23 @@ class _CategoryScreenState extends State<CategoryScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            GridView.builder(
-               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Two columns
-              ),
-              itemCount: categories.length, // Number of categories
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    handleCategoryTap(index); // Set the selected category when an image is tapped
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.all(8),
-                    child: Image.network(
-                      categories[index]['imagePath'], // Use the image path from Firestore
-                      width: 150, // Adjust the width and height as needed
-                      height: 150,
-                      fit: BoxFit.cover,
-                    ),
+            
+            ElevatedButton(
+              onPressed: () {
+                
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GameQuizScreen(), // Pass the selected category
                   ),
                 );
               },
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedCategory.isNotEmpty) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const GameQuizScreen(), // Pass the selected category
-                    ),
-                  );
-                } else {
-                  // Handle when no category is selected
-                }
-              },
               child: const Text("Start Quiz"),
             ),
-            if (selectedCategory.isNotEmpty)
-              Text("Selected Category: $selectedCategory"), // Display the selected category
           ],
         ),
       ),
     );
+  
   }
 }
