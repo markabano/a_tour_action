@@ -1,3 +1,4 @@
+import 'package:a_tour_action/screens/forgot_password_screen.dart';
 import 'package:a_tour_action/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Color.fromARGB(255, 70, 159, 209),
                             ),
                           ),
-                         
                           Text(
                             'Login',
                             style: TextStyle(
@@ -101,9 +101,28 @@ class _LoginScreenState extends State<LoginScreen> {
                               icon: Icons.lock,
                               obscureText: true),
                           const SizedBox(height: 15),
-                          TextButton(
-                              onPressed: () {},
-                              child: const Text("Forgot Password")),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ForgotPasswordScreen(),
+                                        ),
+                                      );
+                                    },
+                                    child: const Text(
+                                      "Forgot Password?",
+                                    )),
+                              ],
+                            ),
+                          ),
                           ElevatedButton(
                             onPressed: signIn,
                             style: ElevatedButton.styleFrom(

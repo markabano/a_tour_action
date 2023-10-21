@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:a_tour_action/auth_page.dart';
 import 'package:a_tour_action/screens/place_info_screen.dart';
 import 'package:a_tour_action/screens/upload_place_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   String email = '';
   String _imageUrl = '';
   bool isLoaded = false;
+  bool isVerified = false;
 
   var myPlaces = FirebaseFirestore.instance
       .collection('places')
@@ -38,6 +40,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   @override
   void initState() {
     super.initState();
+
+    isVerified = FirebaseAuth.instance.currentUser!.emailVerified;
     getUserData();
 
     // Listen to the StreamController to know when data is ready
@@ -71,13 +75,24 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 child: Row(
                   children: [
                     isLoaded
-                        ? CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(_imageUrl),
-                          )
+                        ? _imageUrl.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 50,
+                                backgroundImage: NetworkImage(_imageUrl),
+                              )
+                            : const CircleAvatar(
+                                radius: 50,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 50,
+                                ),
+                              )
                         : const CircleAvatar(
                             radius: 50,
-                            child: Icon(Icons.person),
+                            child: Icon(
+                              Icons.person,
+                              size: 50,
+                            ),
                           ),
                     const SizedBox(
                       width: 20,
@@ -87,12 +102,35 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       children: [
                         Text('Name: ${name}'),
                         Text('Email: ${email}'),
-                        Text('Verified: '),
+                        Row(
+                          children: [
+                            const Text('Verified: '),
+                            Icon(
+                              isVerified
+                                  ? Icons.verified
+                                  : Icons.verified_outlined,
+                              color: isVerified ? Colors.green : Colors.red,
+                            ),
+                            isVerified
+                                ? const SizedBox.shrink()
+                                : TextButton(
+                                    onPressed: verifyEmail,
+                                    child: const Text('Click here to verify'),
+                                  ),
+                          ],
+                        ),
                       ],
                     )
                   ],
                 ),
               ),
+              isVerified
+                  ? const SizedBox.shrink()
+                  : const Text(
+                      'You need to verify your email first before you can upload places.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.red),
+                    ),
               const Divider(
                 thickness: 3,
                 indent: 20,
@@ -101,7 +139,10 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
               const SizedBox(
                 height: 20,
               ),
-              const Text('Your Uploads'),
+              const Text(
+                'Your Uploads',
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(
                 height: 20,
               ),
@@ -109,7 +150,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                 stream: myPlaces,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return CircularProgressIndicator();
+                    return const CircularProgressIndicator();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -217,11 +258,32 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const UploadPlaceScreen(),
-              )),
+          onPressed: () {
+            if (isVerified) {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UploadPlaceScreen(),
+                  ));
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Email not verified'),
+                      content: const Text(
+                          'You need to verify your email first before you can upload places.'),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('OK'))
+                      ],
+                    );
+                  });
+            }
+          },
           child: const Icon(Icons.add),
         ));
   }
@@ -244,6 +306,53 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     setState(() {
       isLoaded = true;
     });
+  }
+
+  Future<void> verifyEmail() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    try {
+      await user!.sendEmailVerification();
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Email sent'),
+              content: Text(
+                  'An email has been sent to ${user.email}. Please verify your email.'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      FirebaseAuth.instance.signOut();
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AuthPage(),
+                        ),
+                      );
+                    },
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    } on FirebaseAuthException catch (e) {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Error'),
+              content: Text(e.message!),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('OK'))
+              ],
+            );
+          });
+    }
   }
 
   Future<void> deletePlaceWithPhotos(int placeId, String placeName) async {
