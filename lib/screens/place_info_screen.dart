@@ -63,370 +63,372 @@ class _PlaceInfoScreenState extends State<PlaceInfoScreen> {
         calculateOverallRating(_allReviews); // Calculate the overall rating
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
+        body: ListView(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    decoration: BoxDecoration(
+                        // borderRadius: BorderRadius.circular(20.0),
+                        color: Colors.blue[100]),
+                    padding: const EdgeInsets.all(30.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      width: 1.0, color: Colors.blueAccent))),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                widget.place["name"],
+                                textAlign: TextAlign.left,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isFavorite = !isFavorite;
+                                  });
+                                  if (isFavorite == true) {
+                                    addFavorite();
+                                  } else {
+                                    removeFavorite();
+                                  }
+
+                                  if (widget.fromHomeScreen == true) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(),
+                                      ),
+                                    );
+                                  }
+                                },
+                                icon: isFavorite == true
+                                    ? const Icon(Icons.favorite)
+                                    : const Icon(Icons.favorite_border),
+                                color: Colors.red,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )),
+                CarouselSlider.builder(
+                  itemCount: 5,
+                  itemBuilder: (context, index, realIndex) {
+                    final picture = widget.place["pictures"];
+
+                    return Center(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: CachedNetworkImage(
+                            imageUrl: picture[index],
+                            fit: BoxFit.cover,
+                            width: 1000,
+                            height: 200,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) => Center(
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          )
+                          // Image.network(
+                          //   picture[index],
+                          //   fit: BoxFit.cover,
+                          //   width: 1000,
+                          //   height: 200,
+                          // ),
+                          ),
+                    );
+                  },
+                  options: CarouselOptions(
+                    height: 250,
+                    autoPlay: true,
+                    enlargeCenterPage: true,
+                  ),
+                ),
+                Container(
                   decoration: BoxDecoration(
                       // borderRadius: BorderRadius.circular(20.0),
                       color: Colors.blue[100]),
-                  padding: const EdgeInsets.all(30.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: 1.0, color: Colors.blueAccent))),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              widget.place["name"],
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  isFavorite = !isFavorite;
-                                });
-                                if (isFavorite == true) {
-                                  addFavorite();
-                                } else {
-                                  removeFavorite();
-                                }
-
-                                if (widget.fromHomeScreen == true) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomeScreen(),
-                                    ),
-                                  );
-                                }
-                              },
-                              icon: isFavorite == true
-                                  ? const Icon(Icons.favorite)
-                                  : const Icon(Icons.favorite_border),
-                              color: Colors.red,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-              CarouselSlider.builder(
-                itemCount: 5,
-                itemBuilder: (context, index, realIndex) {
-                  final picture = widget.place["pictures"];
-
-                  return Center(
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(20),
-                        child: CachedNetworkImage(
-                          imageUrl: picture[index],
-                          fit: BoxFit.cover,
-                          width: 1000,
-                          height: 200,
-                          progressIndicatorBuilder:
-                              (context, url, downloadProgress) => Center(
-                            child: CircularProgressIndicator(
-                                value: downloadProgress.progress),
-                          ),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
-                        )
-                        // Image.network(
-                        //   picture[index],
-                        //   fit: BoxFit.cover,
-                        //   width: 1000,
-                        //   height: 200,
-                        // ),
-                        ),
-                  );
-                },
-                options: CarouselOptions(
-                  height: 250,
-                  autoPlay: true,
-                  enlargeCenterPage: true,
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.blue[100]),
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Overall Rating',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18)),
-                    Row(
-                      children: [
-                        RatingBar.builder(
-                          initialRating: overallRating,
-                          minRating: 1,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          itemSize: 40.0,
-                          ignoreGestures: true,
-                          itemPadding:
-                              const EdgeInsets.symmetric(horizontal: 4.0),
-                          itemBuilder: (context, _) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (newRating) {},
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          ' $overallRating',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ScreenFor360View(
-                                  place: widget.place, index: 0),
-                            ));
-                      },
-                      style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.blue,
-                          side: BorderSide(color: Colors.blue)),
-                      child: const Text('View in 360'),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      'OPENING & CLOSING HOURS',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 15,
-                          child: Icon(Icons.access_time),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 8.0),
-                          child: Text(
-                            '8:00AM - 10:00PM',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15,
-                                color: Colors.lightBlue),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      expand = !expand;
-                    });
-                  },
+                  padding: const EdgeInsets.all(20.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        widget.place["description"],
-                        maxLines: !expand ? 4 : null,
-                        overflow: !expand
-                            ? TextOverflow.ellipsis
-                            : TextOverflow.visible,
-                        textAlign: TextAlign.justify,
-                        style: const TextStyle(
-                            color: Colors.black87,
-                            wordSpacing: 1.5,
-                            height: 1.7),
+                      const Text('Overall Rating',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 18)),
+                      Row(
+                        children: [
+                          RatingBar.builder(
+                            initialRating: overallRating,
+                            minRating: 1,
+                            direction: Axis.horizontal,
+                            allowHalfRating: true,
+                            itemCount: 5,
+                            itemSize: 40.0,
+                            ignoreGestures: true,
+                            itemPadding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            itemBuilder: (context, _) => const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            ),
+                            onRatingUpdate: (newRating) {},
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            ' $overallRating',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                        ],
                       ),
-                      Text(
-                        !expand ? 'Read more' : 'Read less',
-                        style: const TextStyle(color: Colors.blue),
+                      const SizedBox(height: 10),
+                      OutlinedButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ScreenFor360View(
+                                    place: widget.place, index: 0),
+                              ));
+                        },
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.blue,
+                            side: BorderSide(color: Colors.blue)),
+                        child: const Text('View in 360'),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        'OPENING & CLOSING HOURS',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15,
+                            child: Icon(Icons.access_time),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 8.0),
+                            child: Text(
+                              '8:00AM - 10:00PM',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                  color: Colors.lightBlue),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20.0),
-                    color: Colors.blue[100]),
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      ' My Review',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        expand = !expand;
+                      });
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.place["description"],
+                          maxLines: !expand ? 4 : null,
+                          overflow: !expand
+                              ? TextOverflow.ellipsis
+                              : TextOverflow.visible,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(
+                              color: Colors.black87,
+                              wordSpacing: 1.5,
+                              height: 1.7),
+                        ),
+                        Text(
+                          !expand ? 'Read more' : 'Read less',
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: Colors.blue[100]),
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        ' My Review',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 200,
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: reviewController,
-                              decoration: const InputDecoration(
-                                hintText: 'Write a review',
-                                border: OutlineInputBorder(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 200,
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Column(
+                            children: [
+                              TextField(
+                                controller: reviewController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Write a review',
+                                  border: OutlineInputBorder(),
+                                ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                RatingBar.builder(
-                                  initialRating: rating,
-                                  minRating: 1,
-                                  direction: Axis.horizontal,
-                                  allowHalfRating: true,
-                                  itemCount: 5,
-                                  itemSize: 40.0,
-                                  itemPadding:
-                                      EdgeInsets.symmetric(horizontal: 4.0),
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star,
-                                    color: Colors.amber,
-                                  ),
-                                  onRatingUpdate: onRatingChanged,
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    if (reviewController.text.isNotEmpty) {
-                                      addReview();
-                                    }
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.blue,
-                                    onPrimary: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(32.0),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  RatingBar.builder(
+                                    initialRating: rating,
+                                    minRating: 1,
+                                    direction: Axis.horizontal,
+                                    allowHalfRating: true,
+                                    itemCount: 5,
+                                    itemSize: 30.0,
+                                    itemPadding:
+                                        EdgeInsets.symmetric(horizontal: 4.0),
+                                    itemBuilder: (context, _) => Icon(
+                                      Icons.star,
+                                      color: Colors.amber,
                                     ),
+                                    onRatingUpdate: onRatingChanged,
                                   ),
-                                  child: reviewController.text.isNotEmpty
-                                      ? const Text('Update')
-                                      : const Text('Submit'),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      if (reviewController.text.isNotEmpty) {
+                                        addReview();
+                                      }
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      primary: Colors.blue,
+                                      onPrimary: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(32.0),
+                                      ),
+                                    ),
+                                    child: reviewController.text.isNotEmpty
+                                        ? const Text('Update')
+                                        : const Text('Submit'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      const Text(
+                        'Reviews',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      StreamBuilder<List<DocumentSnapshot>>(
+                        stream: _reviewsStreamController.stream,
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Text('No reviews yet.');
+                          }
+
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              final review = snapshot.data![index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  radius: 30,
+                                  backgroundImage:
+                                      NetworkImage(review['reviewerImageUrl']),
                                 ),
-                              ],
+                                title: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    RatingBarIndicator(
+                                      itemSize: 20,
+                                      itemBuilder: (context, index) => Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                      ),
+                                      rating: review['rating'],
+                                      // itemCount: ,
+                                    ),
+                                    Text(review['reviewerName']),
+                                  ],
+                                ),
+                                subtitle: Text(review['reviewText']),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              onPressed: currentPage > 1 ? previousPage : null,
+                              icon: Icon(Icons.arrow_left),
+                            ),
+                            Text(
+                              'Page $currentPage',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            IconButton(
+                              onPressed: _allReviews.length % pageSize == 0
+                                  ? nextPage
+                                  : null,
+                              icon: Icon(Icons.arrow_right),
                             ),
                           ],
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      'Reviews',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    StreamBuilder<List<DocumentSnapshot>>(
-                      stream: _reviewsStreamController.stream,
-                      builder: (context, snapshot) {
-                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Text('No reviews yet.');
-                        }
-
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, index) {
-                            final review = snapshot.data![index];
-                            return ListTile(
-                              leading: CircleAvatar(
-                                radius: 30,
-                                backgroundImage:
-                                    NetworkImage(review['reviewerImageUrl']),
-                              ),
-                              title: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  RatingBarIndicator(
-                                    itemSize: 20,
-                                    itemBuilder: (context, index) => Icon(
-                                      Icons.star,
-                                      color: Colors.amber,
-                                    ),
-                                    rating: review['rating'],
-                                    // itemCount: ,
-                                  ),
-                                  Text(review['reviewerName']),
-                                ],
-                              ),
-                              subtitle: Text(review['reviewText']),
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            onPressed: currentPage > 1 ? previousPage : null,
-                            icon: Icon(Icons.arrow_left),
-                          ),
-                          Text(
-                            'Page $currentPage',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          IconButton(
-                            onPressed: _allReviews.length % pageSize == 0
-                                ? nextPage
-                                : null,
-                            icon: Icon(Icons.arrow_right),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );

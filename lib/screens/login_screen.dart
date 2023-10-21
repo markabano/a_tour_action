@@ -1,5 +1,6 @@
 import 'package:a_tour_action/screens/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../widgets/customTextField.dart';
 
@@ -54,39 +55,39 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Colors.grey[700]),
                           ),
                           const SizedBox(height: 30),
+
+                          
                           SizedBox(
                             height: 55,
                             width: 250,
-                            child: Column(
-                              children: [
-                                Text(
-                                  'By signing in you are agreeing to our ',
-                                  style: TextStyle(
+                            child: RichText
+                            (
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                            text: 'By signing in you are agreeing to our ',
+                            style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.grey[700],
                                   ),
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    // Handle the click event for "Terms and Privacy Policy" here.
-                                    // You can use Navigator.push() to navigate to the terms and privacy policy page.
-                                    // Example:
-                                    // Navigator.push(context, MaterialPageRoute(builder: (context) => TermsAndPrivacyPolicyScreen()));
-                                  },
-                                  child: const Text(
-                                    'Terms and Privacy Policy',
-                                    style: TextStyle(
+                            children: [
+                              TextSpan(
+
+text:  'Terms and Privacy Policy',
+
+recognizer: TapGestureRecognizer()..onTap=() => null,
+
+  
+style: TextStyle(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                       color: Colors
                                           .blue, // You can change the color to make it stand out.
                                       decoration: TextDecoration.underline,
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ]
+                          )),
                           ),
                           const SizedBox(height: 10),
                           CustomTextField(

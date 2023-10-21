@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = false;
   bool isLoaded = false;
   bool hasFavorite = false;
+ 
 
   var favorites = FirebaseFirestore.instance
       .collection('users')
@@ -63,244 +64,448 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+     double fullHeight = MediaQuery.of(context).size.height * .35;
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProfileScreen(),
-                      )),
-                  child: Row(
-                    children: [
-                      Card(
-                        elevation: 5,
-                        shape: CircleBorder(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Color.fromARGB(
-                                  255, 255, 255, 255), // White border color
-                              width: 3.0, // Border width
+        child: ListView(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  child: GestureDetector(
+                    onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfileScreen(),
+                        )),
+                    child: Row(
+                      children: [
+                        Card(
+                          elevation: 5,
+                          shape: CircleBorder(),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color.fromARGB(
+                                    255, 255, 255, 255), // White border color
+                                width: 3.0, // Border width
+                              ),
                             ),
+                            child: CircleAvatar(
+                                // backgroundColor:
+                                //     const Color.fromARGB(255, 255, 255, 255),
+                                child: _imageUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageBuilder: (context, imageProvider) =>
+                                            CircleAvatar(
+                                          backgroundImage: imageProvider,
+                                        ),
+                                        imageUrl: _imageUrl,
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            CircularProgressIndicator(
+                                                value: downloadProgress.progress),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      )
+                                    : CircleAvatar(
+                                        radius: 50,
+                                        child: Icon(
+                                          Icons.person,
+                                        ),
+                                      )),
                           ),
-                          child: CircleAvatar(
-                              // backgroundColor:
-                              //     const Color.fromARGB(255, 255, 255, 255),
-                              child: _imageUrl.isNotEmpty
-                                  ? CachedNetworkImage(
-                                      imageBuilder: (context, imageProvider) =>
-                                          CircleAvatar(
-                                        backgroundImage: imageProvider,
-                                      ),
-                                      imageUrl: _imageUrl,
-                                      progressIndicatorBuilder: (context, url,
-                                              downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                      errorWidget: (context, url, error) =>
-                                          Icon(Icons.error),
-                                    )
-                                  : CircleAvatar(
-                                      radius: 50,
-                                      child: Icon(
-                                        Icons.person,
-                                      ),
-                                    )),
                         ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Hello!",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                            Text(
-                              name,
-                              style: const TextStyle(
-                                  fontSize: 17, fontWeight: FontWeight.bold),
-                            )
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft:
-                        Radius.circular(25.0), // Adjust the radius as needed
-                    bottomRight:
-                        Radius.circular(25.0), // Adjust the radius as needed
-                  ),
-                  color: Color.fromARGB(255, 70, 159, 209),
-                ),
-                width: double.infinity,
-                height: 200,
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: isLoading == true
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 20),
-                                const Text(
-                                  'Baguio City',
-                                  style: TextStyle(
-                                    fontSize: 40,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  '$temperature°C',
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  main,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  description,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      getWeather();
-                                    },
-                                    icon: const Icon(
-                                      Icons.refresh,
-                                      color: Colors.white,
-                                    )),
-                                Image.network(
-                                  'https://openweathermap.org/img/wn/$icon.png',
-                                  height: 100,
-                                  width: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.water_drop,
-                                        color: Colors.white),
-                                    Text(
-                                      '$humidity%',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            )
-                          ],
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Hello!",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              Text(
+                                name,
+                                style: const TextStyle(
+                                    fontSize: 17, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
                         )
-                      : const Center(
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                          ),
-                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              hasFavorite
-                  ? const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text('Favorites', style: TextStyle(fontSize: 20)),
-                    )
-                  : const SizedBox.shrink(),
-              hasFavorite
-                  ? Container(
-                      width: double.infinity,
-                      height: 200,
-                      child: StreamBuilder(
-                        stream: favorites,
-                        builder:
-                            (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasData) {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis
-                                  .horizontal, // Set the scroll direction to horizontal
-                              itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot place =
-                                    shuffleList(snapshot.data!.docs)[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => PlaceInfoScreen(
-                                          place: place['data'],
-                                          fromHomeScreen: true,
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomLeft:
+                          Radius.circular(25.0), // Adjust the radius as needed
+                      bottomRight:
+                          Radius.circular(25.0), // Adjust the radius as needed
+                    ),
+                    color: Color.fromARGB(255, 70, 159, 209),
+                  ),
+                  width: double.infinity,
+                  height: 200,
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: isLoading == true
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // const SizedBox(height: 20),
+                                  const Text(
+                                    'Baguio City',
+                                    style: TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                   Text(
+                                    description.replaceFirst(description[0].toLowerCase(), description[0].toUpperCase()),
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      // fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Text(
+                                    '$temperature°C',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      // fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  // Text(
+                                  //   main,
+                                  //   style: const TextStyle(
+                                  //     fontSize: 15,
+                                  //     fontWeight: FontWeight.bold,
+                                  //     color: Colors.white,
+                                  //   ),
+                                  // ),
+                                 
+                                ],
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            isLoading = false;
+                                          });
+                                          getWeather();
+                                        },
+                                        icon: const Icon(
+                                          Icons.refresh,
+                                          color: Colors.white,
+                                        )),
+                                    Image.network(
+                                      'https://openweathermap.org/img/wn/$icon.png',
+                                      height: 80,
+                                      width: 80,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        const Icon(Icons.water_drop,
+                                            color: Colors.white),
+                                        Text(
+                                          '$humidity%',
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              )
+                            ],
+                          )
+                        : const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                  ),
+                ),
+                hasFavorite
+                    ? const Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Text('Favorites', style: TextStyle(fontSize: 20)),
+                      )
+                    : const SizedBox.shrink(),
+                hasFavorite
+                    ? Container(
+                        width: double.infinity,
+                        height: 200,
+                        child: StreamBuilder(
+                          stream: favorites,
+                          builder:
+                              (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasData) {
+                              return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis
+                                    .horizontal, // Set the scroll direction to horizontal
+                                itemCount: snapshot.data!.docs.length,
+                                itemBuilder: (context, index) {
+                                  DocumentSnapshot place =
+                                      shuffleList(snapshot.data!.docs)[index];
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => PlaceInfoScreen(
+                                            place: place['data'],
+                                            fromHomeScreen: true,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Card(
+                                      elevation: 4, // Add shadow to the card
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10.0),
+                                      ),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        width: MediaQuery.of(context).size.width *
+                                            .78,
+                                        // height: MediaQuery.of(context).size.height * .10,
+                                        // height: 300,
+
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(5),
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: place['data']
+                                                          ['pictures'][0],
+                                                      height: 150,
+                                                      width: 150,
+                                                      fit: BoxFit.cover,
+                                                      progressIndicatorBuilder:
+                                                          (context, url,
+                                                                  progress) =>
+                                                              Center(
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                          color: const Color
+                                                              .fromARGB(
+                                                              255, 70, 159, 209),
+                                                          value:
+                                                              progress.progress,
+                                                        ),
+                                                      ),
+                                                      errorWidget:
+                                                          (context, url, error) =>
+                                                              Icon(Icons.error),
+                                                    )),
+                                                Column(
+                                                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                  children: [
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: place['data']
+                                                            ['pictures'][1],
+                                                        height: 70,
+                                                        width: 100,
+                                                        fit: BoxFit.cover,
+                                                        progressIndicatorBuilder:
+                                                            (context, url,
+                                                                    progress) =>
+                                                                Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: const Color
+                                                                .fromARGB(255, 70,
+                                                                159, 209),
+                                                            value:
+                                                                progress.progress,
+                                                          ),
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Icon(Icons.error),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(
+                                                      height: 10,
+                                                    ),
+                                                    ClipRRect(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                      child: CachedNetworkImage(
+                                                        imageUrl: place['data']
+                                                            ['pictures'][2],
+                                                        height: 70,
+                                                        width: 100,
+                                                        fit: BoxFit.cover,
+                                                        progressIndicatorBuilder:
+                                                            (context, url,
+                                                                    progress) =>
+                                                                Center(
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            color: const Color
+                                                                .fromARGB(255, 70,
+                                                                159, 209),
+                                                            value:
+                                                                progress.progress,
+                                                          ),
+                                                        ),
+                                                        errorWidget: (context,
+                                                                url, error) =>
+                                                            Icon(Icons.error),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                              height: 5,
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 8.0),
+                                              child: Text(
+                                                place['data']['name'],
+                                                textAlign: TextAlign.left,
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                    );
-                                  },
-                                  child: Card(
-                                    elevation: 4, // Add shadow to the card
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
                                     ),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      width: MediaQuery.of(context).size.width *
-                                          .78,
-                                      // height: MediaQuery.of(context).size.height * .10,
-                                      // height: 300,
+                                  );
+                                },
+                              );
+                            } else {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          },
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+                const Padding(
+                  padding: EdgeInsets.all(12.0),
+                  child:
+                      Text('Featured Locations', style: TextStyle(fontSize: 20)),
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 200,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: featuredPlaces,
+                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasData) {
+                        List<DocumentSnapshot> places = snapshot.data!.docs;
+                        places = shuffleList(
+                            places); // Shuffle the list of featured places
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis
+                              .horizontal, // Set the scroll direction to horizontal
+                          itemCount: 3,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot place = places[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PlaceInfoScreen(
+                                      place: place.data(),
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Card(
+                                elevation: 4, // Add shadow to the card
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  width: MediaQuery.of(context).size.width * .78,
+                                  // height: MediaQuery.of(context).size.height * .10,
+                                  // height: 300,
 
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
+                                          ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              child: CachedNetworkImage(
+                                                imageUrl: place['pictures'][0],
+                                                height: 150,
+                                                width: 150,
+                                                fit: BoxFit.cover,
+                                                progressIndicatorBuilder:
+                                                    (context, url, progress) =>
+                                                        Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    color: const Color.fromARGB(
+                                                        255, 70, 159, 209),
+                                                    value: progress.progress,
+                                                  ),
+                                                ),
+                                                errorWidget:
+                                                    (context, url, error) =>
+                                                        Icon(Icons.error),
+                                              )),
+                                          Column(
+                                            // mainAxisAlignment: MainAxisAlignment.spaceAround,
                                             children: [
                                               ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(5),
                                                   child: CachedNetworkImage(
-                                                    imageUrl: place['data']
-                                                        ['pictures'][0],
-                                                    height: 150,
-                                                    width: 150,
+                                                    imageUrl: place['pictures']
+                                                        [1],
+                                                    height: 70,
+                                                    width: 100,
                                                     fit: BoxFit.cover,
                                                     progressIndicatorBuilder:
                                                         (context, url,
@@ -308,287 +513,94 @@ class _HomeScreenState extends State<HomeScreen> {
                                                             Center(
                                                       child:
                                                           CircularProgressIndicator(
-                                                        color: const Color
-                                                            .fromARGB(
-                                                            255, 70, 159, 209),
-                                                        value:
-                                                            progress.progress,
+                                                        color:
+                                                            const Color.fromARGB(
+                                                                255,
+                                                                70,
+                                                                159,
+                                                                209),
+                                                        value: progress.progress,
                                                       ),
                                                     ),
                                                     errorWidget:
                                                         (context, url, error) =>
                                                             Icon(Icons.error),
                                                   )),
-                                              Column(
-                                                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: place['data']
-                                                          ['pictures'][1],
-                                                      height: 70,
-                                                      width: 100,
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  progress) =>
-                                                              Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color: const Color
-                                                              .fromARGB(255, 70,
-                                                              159, 209),
-                                                          value:
-                                                              progress.progress,
-                                                        ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  child: CachedNetworkImage(
+                                                    imageUrl: place['pictures']
+                                                        [2],
+                                                    height: 70,
+                                                    width: 100,
+                                                    fit: BoxFit.cover,
+                                                    progressIndicatorBuilder:
+                                                        (context, url,
+                                                                progress) =>
+                                                            Center(
+                                                      child:
+                                                          CircularProgressIndicator(
+                                                        color:
+                                                            const Color.fromARGB(
+                                                                255,
+                                                                70,
+                                                                159,
+                                                                209),
+                                                        value: progress.progress,
                                                       ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          Icon(Icons.error),
                                                     ),
+                                                    errorWidget:
+                                                        (context, url, error) =>
+                                                            Icon(Icons.error),
+                                                  )
+                                                  // Image.network(
+                                                  //   place['data']['pictures'][2],
+                                                  //   height: 70,
+                                                  //   width: 100,
+                                                  //   fit: BoxFit.cover,
+                                                  // ),
                                                   ),
-                                                  const SizedBox(
-                                                    height: 10,
-                                                  ),
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: place['data']
-                                                          ['pictures'][2],
-                                                      height: 70,
-                                                      width: 100,
-                                                      fit: BoxFit.cover,
-                                                      progressIndicatorBuilder:
-                                                          (context, url,
-                                                                  progress) =>
-                                                              Center(
-                                                        child:
-                                                            CircularProgressIndicator(
-                                                          color: const Color
-                                                              .fromARGB(255, 70,
-                                                              159, 209),
-                                                          value:
-                                                              progress.progress,
-                                                        ),
-                                                      ),
-                                                      errorWidget: (context,
-                                                              url, error) =>
-                                                          Icon(Icons.error),
-                                                    ),
-                                                  ),
-                                                ],
-                                              )
                                             ],
-                                          ),
-                                          const SizedBox(
-                                            height: 5,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 8.0),
-                                            child: Text(
-                                              place['data']['name'],
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(fontSize: 18),
-                                            ),
-                                          ),
+                                          )
                                         ],
                                       ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        },
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              const Padding(
-                padding: EdgeInsets.all(12.0),
-                child:
-                    Text('Featured Locations', style: TextStyle(fontSize: 20)),
-              ),
-              Container(
-                width: double.infinity,
-                height: 200,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: featuredPlaces,
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      List<DocumentSnapshot> places = snapshot.data!.docs;
-                      places = shuffleList(
-                          places); // Shuffle the list of featured places
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis
-                            .horizontal, // Set the scroll direction to horizontal
-                        itemCount: 3,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot place = places[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => PlaceInfoScreen(
-                                    place: place.data(),
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Card(
-                              elevation: 4, // Add shadow to the card
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                width: MediaQuery.of(context).size.width * .78,
-                                // height: MediaQuery.of(context).size.height * .10,
-                                // height: 300,
-
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            child: CachedNetworkImage(
-                                              imageUrl: place['pictures'][0],
-                                              height: 150,
-                                              width: 150,
-                                              fit: BoxFit.cover,
-                                              progressIndicatorBuilder:
-                                                  (context, url, progress) =>
-                                                      Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                                  color: const Color.fromARGB(
-                                                      255, 70, 159, 209),
-                                                  value: progress.progress,
-                                                ),
-                                              ),
-                                              errorWidget:
-                                                  (context, url, error) =>
-                                                      Icon(Icons.error),
-                                            )),
-                                        Column(
-                                          // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                          children: [
-                                            ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: place['pictures']
-                                                      [1],
-                                                  height: 70,
-                                                  width: 100,
-                                                  fit: BoxFit.cover,
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              progress) =>
-                                                          Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255,
-                                                              70,
-                                                              159,
-                                                              209),
-                                                      value: progress.progress,
-                                                    ),
-                                                  ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Icon(Icons.error),
-                                                )),
-                                            const SizedBox(
-                                              height: 10,
-                                            ),
-                                            ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                child: CachedNetworkImage(
-                                                  imageUrl: place['pictures']
-                                                      [2],
-                                                  height: 70,
-                                                  width: 100,
-                                                  fit: BoxFit.cover,
-                                                  progressIndicatorBuilder:
-                                                      (context, url,
-                                                              progress) =>
-                                                          Center(
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                              255,
-                                                              70,
-                                                              159,
-                                                              209),
-                                                      value: progress.progress,
-                                                    ),
-                                                  ),
-                                                  errorWidget:
-                                                      (context, url, error) =>
-                                                          Icon(Icons.error),
-                                                )
-                                                // Image.network(
-                                                //   place['data']['pictures'][2],
-                                                //   height: 70,
-                                                //   width: 100,
-                                                //   fit: BoxFit.cover,
-                                                // ),
-                                                ),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Text(
-                                        place['name'],
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 18),
+                                      const SizedBox(
+                                        height: 5,
                                       ),
-                                    ),
-                                  ],
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 8.0),
+                                          child: Text(
+                                            place['name'],
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(fontSize: 18),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Color.fromARGB(255, 70, 159, 209),
-                        ),
-                      );
-                    }
-                  },
+                            );
+                          },
+                        );
+                      } else {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: Color.fromARGB(255, 70, 159, 209),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
