@@ -112,51 +112,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   NetworkImage(userImgUrl, scale: 1.0),
                             )
                     else
-                      const Icon(
-                        Icons.person,
-                        size: 50,
+                      const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Icon(Icons.add_a_photo),
                       ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(Icons.add_a_photo),
-                    ),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            TextFormField(
+            TextField(
               controller: nameController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Name',
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.person_outline),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.black),
+                ),
+                fillColor: Colors.white,
+                filled: true,
               ),
             ),
-            const SizedBox(height: 20),
-            TextFormField(
+            const SizedBox(height: 10),
+            TextField(
               controller: emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.email_outlined),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.black),
+                ),
+                fillColor: Colors.white,
+                filled: true,
+                enabled: false,
               ),
-              enabled: false,
             ),
-            const SizedBox(height: 20),
-            TextFormField(
+            const SizedBox(height: 10),
+            TextField(
               controller: passwordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'New Password',
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.password_outlined),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.black),
+                ),
+                fillColor: Colors.white,
+                filled: true,
               ),
             ),
-            const SizedBox(height: 20),
-            TextFormField(
+            const SizedBox(height: 10),
+            TextField(
               controller: confirmPasswordController,
               obscureText: true,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Confirm Password',
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.password_outlined),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: const BorderSide(color: Colors.black),
+                ),
+                fillColor: Colors.white,
+                filled: true,
               ),
             ),
           ]),
@@ -174,7 +210,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     nameController.text = userData.data()!['name'];
     emailController.text = userData.data()!['email'];
-    userImgUrl = userData.data()!['imageUrl'];
+    userImgUrl = userData.data()!['imageUrl'] ?? '';
 
     setState(() {
       _isLoaded = true;

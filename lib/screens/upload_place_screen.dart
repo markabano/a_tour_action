@@ -141,30 +141,82 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
                     TextField(
                       controller: nameController,
                       keyboardType: TextInputType.name,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Place Name',
+                        prefixIcon: const Icon(Icons.place),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        fillColor: Colors.white,
+                        filled: true,
                       ),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     TextField(
                       controller: latController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Latitude',
+                        prefixIcon: const Icon(Icons.location_searching),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        fillColor: Colors.white,
+                        filled: true,
                       ),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     TextField(
                       controller: lngController,
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Longitude',
+                        prefixIcon: const Icon(Icons.location_searching),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        fillColor: Colors.white,
+                        filled: true,
                       ),
+                    ),
+                    const SizedBox(
+                      height: 10,
                     ),
                     TextField(
                       controller: descController,
                       keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: 'Description',
+                        prefixIcon: const Icon(Icons.description_outlined),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.white),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(color: Colors.black),
+                        ),
+                        fillColor: Colors.white,
+                        filled: true,
                       ),
                     ),
                     const SizedBox(

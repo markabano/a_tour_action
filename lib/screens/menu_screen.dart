@@ -48,64 +48,67 @@ class _MenuScreenState extends State<MenuScreen> {
                                 5, // Adjust the elevation to control the shadow depth
                             shape: CircleBorder(), // Make the card circular
                             child: Container(
-                              width:
-                                  100, // Set the width and height to control the size of the circular border
-                              height: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  width:
-                                      3, // Adjust the width of the border as needed
+                                width:
+                                    100, // Set the width and height to control the size of the circular border
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    width:
+                                        3, // Adjust the width of the border as needed
+                                  ),
                                 ),
-                              ),
-                              child: _imageUrl.isNotEmpty ? CachedNetworkImage(
-                                imageBuilder: (context, imageProvider) =>
-                                    CircleAvatar(
-                                  radius:
-                                      48, // Adjust the radius to fit within the border
-                                  backgroundImage: 
-                                      imageProvider,
-                                      
-                                  backgroundColor: Colors
-                                      .transparent, // Set a transparent background color
-                                  // child: _imageUrl.isEmpty
-                                  //     ? Icon(
-                                  //         Icons.person,
-                                  //         size: 48,
-                                  //       )
-                                  //     : null,
-                                ),
-                                imageUrl: _imageUrl,
-                                progressIndicatorBuilder:
-                                    (context, url, downloadProgress) =>
-                                        CircularProgressIndicator(
-                                            value: downloadProgress.progress),
-                                errorWidget: (context, url, error) =>
-                                    Icon(Icons.error),
-                              )
-                              // CircleAvatar(
-                              //   radius:
-                              //       48, // Adjust the radius to fit within the border
-                              //   backgroundImage: _imageUrl.isNotEmpty
-                              //       ? NetworkImage(_imageUrl)
-                              //       : null,
-                              //   backgroundColor: Colors
-                              //       .transparent, // Set a transparent background color
-                              //   child: _imageUrl.isEmpty
-                              //       ? Icon(
-                              //           Icons.person,
-                              //           size: 48,
-                              //         )
-                              //       : null, // Show the Icon only when _imageUrl is empty
-                              // ),
+                                child: _imageUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                CircleAvatar(
+                                          radius:
+                                              48, // Adjust the radius to fit within the border
+                                          backgroundImage: imageProvider,
 
-                              : CircleAvatar(
-                                      radius: 50,
-                                      child: Icon(
-                                        Icons.person,
-                                        size: 50,                                      ),)
-                            ),
+                                          backgroundColor: Colors
+                                              .transparent, // Set a transparent background color
+                                          // child: _imageUrl.isEmpty
+                                          //     ? Icon(
+                                          //         Icons.person,
+                                          //         size: 48,
+                                          //       )
+                                          //     : null,
+                                        ),
+                                        imageUrl: _imageUrl,
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            CircularProgressIndicator(
+                                                value:
+                                                    downloadProgress.progress),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      )
+                                    // CircleAvatar(
+                                    //   radius:
+                                    //       48, // Adjust the radius to fit within the border
+                                    //   backgroundImage: _imageUrl.isNotEmpty
+                                    //       ? NetworkImage(_imageUrl)
+                                    //       : null,
+                                    //   backgroundColor: Colors
+                                    //       .transparent, // Set a transparent background color
+                                    //   child: _imageUrl.isEmpty
+                                    //       ? Icon(
+                                    //           Icons.person,
+                                    //           size: 48,
+                                    //         )
+                                    //       : null, // Show the Icon only when _imageUrl is empty
+                                    // ),
+
+                                    : CircleAvatar(
+                                        radius: 50,
+                                        child: Icon(
+                                          Icons.person,
+                                          size: 50,
+                                        ),
+                                      )),
                           ),
                           const SizedBox(width: 20),
                           Text(
@@ -171,19 +174,6 @@ class _MenuScreenState extends State<MenuScreen> {
                   color: Color.fromARGB(255, 70, 159, 209),
                 ),
                 title: const Text('About'),
-                trailing: const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Color.fromARGB(255, 70, 159, 209),
-                ),
-              ),
-            ),
-            const Card(
-              child: ListTile(
-                leading: const Icon(
-                  Icons.help,
-                  color: Color.fromARGB(255, 70, 159, 209),
-                ),
-                title: const Text('Help'),
                 trailing: const Icon(
                   Icons.arrow_forward_ios,
                   color: Color.fromARGB(255, 70, 159, 209),
