@@ -19,9 +19,9 @@ class ATourAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Color.fromARGB(255, 70, 159, 209), // Set the primary color here
+        primaryColor: const Color.fromARGB(255, 70, 159, 209), // Set the primary color here
       ),
-      home: SplashScreen(),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
