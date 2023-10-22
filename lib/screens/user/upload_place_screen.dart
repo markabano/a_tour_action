@@ -667,6 +667,7 @@ class _UploadPlaceScreenState extends State<UploadPlaceScreen> {
         'pictures': imageUrl,
         'panorama': image360Url,
         'searchKeywords': searchKeywords,
+        'status': 'pending',
         'uid': user!.uid,
       });
     }

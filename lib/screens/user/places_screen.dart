@@ -16,6 +16,7 @@ class PlacesScreen extends StatefulWidget {
 class _PlacesScreenState extends State<PlacesScreen> {
   var firebasePlaces = FirebaseFirestore.instance
       .collection('places')
+      .where('status', isEqualTo: 'approved')
       .orderBy('name')
       .snapshots();
 
