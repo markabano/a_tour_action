@@ -1,8 +1,8 @@
-import 'package:a_tour_action/screens/home_screen.dart';
+import 'package:a_tour_action/screens/user/home_screen.dart';
+import 'package:a_tour_action/widgets/customTextField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../widgets/customTextField.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -43,7 +43,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Color.fromARGB(255, 70, 159, 209),
                   ),
                 ),
-               
                 Text(
                   'Register',
                   style: TextStyle(

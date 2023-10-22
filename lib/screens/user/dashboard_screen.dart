@@ -1,12 +1,18 @@
 import 'dart:async';
-import 'package:a_tour_action/auth_page.dart';
-import 'package:a_tour_action/screens/place_info_screen.dart';
-import 'package:a_tour_action/screens/upload_place_screen.dart';
+// import 'package:a_tour_action/auth_page.dart';
+// import 'package:a_tour_action/screens/place_info_screen.dart';
+// import 'package:a_tour_action/screens/upload_place_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:a_tour_action/screens/user/place_info_screen.dart';
+// import 'package:a_tour_action/screens/user/upload_place_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+
+import '../../auth_page.dart';
+import '../place_info_screen.dart';
+import 'upload_place_screen.dart';
 
 class DashBoardScreen extends StatefulWidget {
   const DashBoardScreen({super.key});

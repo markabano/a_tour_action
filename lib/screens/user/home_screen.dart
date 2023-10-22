@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:a_tour_action/screens/place_info_screen.dart';
-import 'package:a_tour_action/screens/profile_screen.dart';
+import 'package:a_tour_action/screens/user/place_info_screen.dart';
+import 'package:a_tour_action/screens/user/profile_screen.dart';
+import 'package:a_tour_action/widgets/bottom_navigation.dart';
+import 'package:a_tour_action/widgets/camera.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/camera.dart';
 import 'package:http/http.dart' as http;
 import 'package:cached_network_image/cached_network_image.dart';
 

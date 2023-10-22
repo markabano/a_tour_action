@@ -1,5 +1,9 @@
-import 'package:a_tour_action/screens/ar_screen.dart';
+// import 'package:a_tour_action/screens/ar_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../screens/user/ar_screen.dart';
+
+// import '../screens/ar_screen.dart';
 
 class Camera extends StatelessWidget {
   const Camera({

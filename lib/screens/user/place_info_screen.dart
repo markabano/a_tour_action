@@ -1,15 +1,12 @@
 import 'dart:async';
-// import 'package:a_tour_action/screens/home_screen.dart';
-// import 'package:a_tour_action/screens/screenFor_360view.dart';
+import 'package:a_tour_action/screens/user/home_screen.dart';
+import 'package:a_tour_action/screens/user/screenFor_360view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
-import 'user/home_screen.dart';
-import 'user/screenFor_360view.dart';
 
 class PlaceInfoScreen extends StatefulWidget {
   const PlaceInfoScreen({super.key, required this.place, this.fromHomeScreen});

@@ -1,10 +1,10 @@
 import 'dart:async';
-import 'package:a_tour_action/screens/place_info_screen.dart';
+import 'package:a_tour_action/screens/user/place_info_screen.dart';
+import 'package:a_tour_action/widgets/bottom_navigation.dart';
+import 'package:a_tour_action/widgets/camera.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/camera.dart';
 
 class PlacesScreen extends StatefulWidget {
   const PlacesScreen({super.key});
@@ -16,6 +16,7 @@ class PlacesScreen extends StatefulWidget {
 class _PlacesScreenState extends State<PlacesScreen> {
   var firebasePlaces = FirebaseFirestore.instance
       .collection('places')
+      .where('status', isEqualTo: 'approved')
       .orderBy('name')
       .snapshots();
 

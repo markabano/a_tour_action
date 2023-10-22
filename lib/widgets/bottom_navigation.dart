@@ -1,8 +1,8 @@
-import 'package:a_tour_action/screens/game_screen.dart';
-import 'package:a_tour_action/screens/places_screen.dart';
-import 'package:a_tour_action/screens/home_screen.dart';
+import 'package:a_tour_action/screens/user/game_screen.dart';
+import 'package:a_tour_action/screens/user/places_screen.dart';
+import 'package:a_tour_action/screens/user/home_screen.dart';
+import 'package:a_tour_action/screens/user/menu_screen.dart';
 import 'package:flutter/material.dart';
-import '../screens/menu_screen.dart';
 
 class BottomNavigation extends StatelessWidget {
   final bool homeFill;
@@ -11,13 +11,14 @@ class BottomNavigation extends StatelessWidget {
   final bool menuFill;
   final ValueChanged<bool>? onGameFillChanged;
 
-  const BottomNavigation(
-      {super.key,
-      required this.placeFill,
-      required this.homeFill,
-      required this.gameFill,
-      required this.menuFill,
-      this.onGameFillChanged,});
+  const BottomNavigation({
+    super.key,
+    required this.placeFill,
+    required this.homeFill,
+    required this.gameFill,
+    required this.menuFill,
+    this.onGameFillChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
