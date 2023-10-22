@@ -1,13 +1,13 @@
-import 'package:a_tour_action/screens/about.dart';
-import 'package:a_tour_action/screens/dashboard_screen.dart';
-import 'package:a_tour_action/screens/profile_screen.dart';
+import 'package:a_tour_action/auth_page.dart';
+import 'package:a_tour_action/screens/user/about.dart';
+import 'package:a_tour_action/screens/user/dashboard_screen.dart';
+import 'package:a_tour_action/screens/user/profile_screen.dart';
+import 'package:a_tour_action/widgets/bottom_navigation.dart';
+import 'package:a_tour_action/widgets/camera.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../widgets/bottom_navigation.dart';
-import '../widgets/camera.dart';
-import '../auth_page.dart';
 
 class MenuScreen extends StatefulWidget {
   MenuScreen({super.key, this.isLoaded = false});

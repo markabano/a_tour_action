@@ -1,8 +1,8 @@
-import 'package:a_tour_action/screens/forgot_password_screen.dart';
-import 'package:a_tour_action/screens/register_screen.dart';
+import 'package:a_tour_action/screens/user/forgot_password_screen.dart';
+import 'package:a_tour_action/screens/user/register_screen.dart';
+import 'package:a_tour_action/widgets/customTextField.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../widgets/customTextField.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:a_tour_action/screens/home_screen.dart';
-import 'package:a_tour_action/screens/screenFor_360view.dart';
+import 'package:a_tour_action/screens/user/home_screen.dart';
+import 'package:a_tour_action/screens/user/screenFor_360view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
