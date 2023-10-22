@@ -37,7 +37,7 @@ class _MenuScreenState extends State<MenuScreen> {
               alignment: Alignment.centerLeft,
               width: double.infinity,
               height: 200,
-              color: Color.fromARGB(255, 249, 249, 249),
+              color: const Color.fromARGB(255, 249, 249, 249),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: widget.isLoaded
@@ -46,7 +46,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           Card(
                             elevation:
                                 5, // Adjust the elevation to control the shadow depth
-                            shape: CircleBorder(), // Make the card circular
+                            shape: const CircleBorder(), // Make the card circular
                             child: Container(
                                 width:
                                     100, // Set the width and height to control the size of the circular border
@@ -54,7 +54,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    color: const Color.fromARGB(255, 255, 255, 255),
                                     width:
                                         3, // Adjust the width of the border as needed
                                   ),
@@ -84,7 +84,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                                 value:
                                                     downloadProgress.progress),
                                         errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
+                                            const Icon(Icons.error),
                                       )
                                     // CircleAvatar(
                                     //   radius:
@@ -102,7 +102,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                     //       : null, // Show the Icon only when _imageUrl is empty
                                     // ),
 
-                                    : CircleAvatar(
+                                    : const CircleAvatar(
                                         radius: 50,
                                         child: Icon(
                                           Icons.person,
@@ -130,7 +130,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DashBoardScreen(),
+                    builder: (context) => const DashBoardScreen(),
                   ),
                 ),
                 leading: const Icon(
@@ -149,7 +149,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ProfileScreen(),
+                    builder: (context) => const ProfileScreen(),
                   ),
                 ),
                 leading: const Icon(
@@ -167,9 +167,9 @@ class _MenuScreenState extends State<MenuScreen> {
               child: ListTile(
                 onTap: () {
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => About()));
+                      MaterialPageRoute(builder: (context) => const About()));
                 },
-                leading: Icon(
+                leading: const Icon(
                   Icons.info,
                   color: Color.fromARGB(255, 70, 159, 209),
                 ),
@@ -184,11 +184,11 @@ class _MenuScreenState extends State<MenuScreen> {
               onTap: logout,
               child: const Card(
                 child: ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.logout,
                     color: Color.fromARGB(255, 166, 0, 0),
                   ),
-                  title: const Text('Logout'),
+                  title: Text('Logout'),
                   // trailing: const Icon(Icons.arrow_forward_ios),
                 ),
               ),
@@ -197,8 +197,8 @@ class _MenuScreenState extends State<MenuScreen> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Camera(),
-      bottomNavigationBar: BottomNavigation(
+      floatingActionButton: const Camera(),
+      bottomNavigationBar: const BottomNavigation(
           homeFill: false, gameFill: false, placeFill: false, menuFill: true),
     );
   }
@@ -211,7 +211,7 @@ class _MenuScreenState extends State<MenuScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => AuthPage(),
+        builder: (context) => const AuthPage(),
       ),
     );
   }
