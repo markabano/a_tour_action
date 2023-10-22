@@ -217,14 +217,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                         )),
                                     Image.network(
                                       'https://openweathermap.org/img/wn/$icon.png',
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.cover,
+                                      height: 75,
+                                      width: 75,
+                                      fit: BoxFit.contain,
                                     ),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         const Icon(Icons.water_drop,
+                                        size: 20,
                                             color: Colors.white),
                                         Text(
                                           '$humidity%',

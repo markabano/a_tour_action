@@ -49,6 +49,7 @@ dependencies:
   panorama_viewer: ^1.0.1
   path: ^1.8.3
   path_provider: ^2.1.1
+  widgets_to_image: ^0.0.2
 
 dev_dependencies:
   arcore_flutter_plugin:

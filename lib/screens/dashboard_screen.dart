@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:a_tour_action/auth_page.dart';
 import 'package:a_tour_action/screens/place_info_screen.dart';
 import 'package:a_tour_action/screens/upload_place_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -68,192 +69,254 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
           centerTitle: true,
         ),
         body: SafeArea(
-          child: Column(
+          child: ListView(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    isLoaded
-                        ? _imageUrl.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 50,
-                                backgroundImage: NetworkImage(_imageUrl),
-                              )
-                            : const CircleAvatar(
-                                radius: 50,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 50,
-                                ),
-                              )
-                        : const CircleAvatar(
-                            radius: 50,
-                            child: Icon(
-                              Icons.person,
-                              size: 50,
-                            ),
-                          ),
-                    const SizedBox(
-                      width: 20,
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Name: ${name}'),
-                        Text('Email: ${email}'),
-                        Row(
-                          children: [
-                            const Text('Verified: '),
-                            Icon(
-                              isVerified
-                                  ? Icons.verified
-                                  : Icons.verified_outlined,
-                              color: isVerified ? Colors.green : Colors.red,
-                            ),
-                            isVerified
-                                ? const SizedBox.shrink()
-                                : TextButton(
-                                    onPressed: verifyEmail,
-                                    child: const Text('Click here to verify'),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Expanded(
+                      child: Row(
+                        children: [
+                          isLoaded
+                              ?  Card(
+                            elevation:
+                                5, // Adjust the elevation to control the shadow depth
+                            shape: CircleBorder(), // Make the card circular
+                            child: Container(
+                                width:
+                                    100, // Set the width and height to control the size of the circular border
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    width:
+                                        3, // Adjust the width of the border as needed
                                   ),
-                          ],
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              isVerified
-                  ? const SizedBox.shrink()
-                  : const Text(
-                      'You need to verify your email first before you can upload places.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.red),
-                    ),
-              const Divider(
-                thickness: 3,
-                indent: 20,
-                endIndent: 20,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                'Your Uploads',
-                style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: myPlaces,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Text('No data available');
-                  }
+                                ),
+                                child: _imageUrl.isNotEmpty
+                                    ? CachedNetworkImage(
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                CircleAvatar(
+                                          radius:
+                                              48, // Adjust the radius to fit within the border
+                                          backgroundImage: imageProvider,
 
-                  places = snapshot.data!.docs; // List of documents
+                                          backgroundColor: Colors
+                                              .transparent, // Set a transparent background color
+                                          // child: _imageUrl.isEmpty
+                                          //     ? Icon(
+                                          //         Icons.person,
+                                          //         size: 48,
+                                          //       )
+                                          //     : null,
+                                        ),
+                                        imageUrl: _imageUrl,
+                                        progressIndicatorBuilder: (context, url,
+                                                downloadProgress) =>
+                                            CircularProgressIndicator(
+                                                value:
+                                                    downloadProgress.progress),
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      )
+                                    // CircleAvatar(
+                                    //   radius:
+                                    //       48, // Adjust the radius to fit within the border
+                                    //   backgroundImage: _imageUrl.isNotEmpty
+                                    //       ? NetworkImage(_imageUrl)
+                                    //       : null,
+                                    //   backgroundColor: Colors
+                                    //       .transparent, // Set a transparent background color
+                                    //   child: _imageUrl.isEmpty
+                                    //       ? Icon(
+                                    //           Icons.person,
+                                    //           size: 48,
+                                    //         )
+                                    //       : null, // Show the Icon only when _imageUrl is empty
+                                    // ),
 
-                  // Signal that data is ready
-                  _dataReadyController.add(true);
-
-                  return Expanded(
-                    child: GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8.0,
-                        mainAxisSpacing: 8.0,
-                      ),
-                      itemCount: places.length,
-                      itemBuilder: (context, index) {
-                        final placeDoc = places[index];
-                        final placeData = placeDoc.data();
-
-                        // Replace 'PlaceField' with the actual field name you want to display
-                        final placeName = placeData['name'];
-                        final placeImages = placeData['pictures'];
-                        final placeId = placeData['id'];
-
-                        return GestureDetector(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlaceInfoScreen(
-                                place: placeData,
+                                    : CircleAvatar(
+                                        radius: 50,
+                                        child: Icon(
+                                          Icons.person,
+                                          size: 50,
+                                        ),
+                                      )),
+                          ) :
+                          CircleAvatar(
+                                        radius: 50,
+                                        child: Icon(
+                                          Icons.person,
+                                          size: 50,
+                                        ),
+                                      ),
+                          const SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Name: ${name}'),
+                              Text('Email: ${email}'),
+                              Row(
+                                children: [
+                                  const Text('Verified: '),
+                                  Icon(
+                                    isVerified
+                                        ? Icons.verified
+                                        : Icons.verified_outlined,
+                                    color: isVerified ? Colors.green : Colors.red,
+                                  ),
+                                  
+                                ],
                               ),
-                            ),
+                              isVerified
+                                      ? const SizedBox.shrink()
+                                      : TextButton(
+                                          onPressed: verifyEmail,
+                                          child: const Text('Click here to verify', textAlign: TextAlign.start,),
+                                        ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                  isVerified
+                      ? const SizedBox.shrink()
+                      : const Text(
+                          'You need to verify your email first before you can upload places.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.red),
+                        ),
+                  const Divider(
+                    thickness: 3,
+                    indent: 20,
+                    endIndent: 20,
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    'Your Uploads',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                    stream: myPlaces,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return Text('No data available');
+                      }
+          
+                      places = snapshot.data!.docs; // List of documents
+          
+                      // Signal that data is ready
+                      _dataReadyController.add(true);
+          
+                      return Expanded(
+                        child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8.0,
+                            mainAxisSpacing: 8.0,
                           ),
-                          child: Card(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: PageView.builder(
-                                    itemCount: placeImages.length,
-                                    controller: _pageController,
-                                    itemBuilder: (context, imageIndex) {
-                                      final imageUrl = placeImages[imageIndex];
-                                      return Image.network(
-                                        imageUrl,
-                                        fit: BoxFit.cover,
-                                      );
-                                    },
+                          itemCount: places.length,
+                          itemBuilder: (context, index) {
+                            final placeDoc = places[index];
+                            final placeData = placeDoc.data();
+          
+                            // Replace 'PlaceField' with the actual field name you want to display
+                            final placeName = placeData['name'];
+                            final placeImages = placeData['pictures'];
+                            final placeId = placeData['id'];
+          
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PlaceInfoScreen(
+                                    place: placeData,
                                   ),
                                 ),
-                                Row(
+                              ),
+                              child: Card(
+                                child: Column(
                                   children: [
                                     Expanded(
-                                      child: Align(
-                                        alignment: Alignment.center,
-                                        child: Text(placeName),
+                                      child: PageView.builder(
+                                        itemCount: placeImages.length,
+                                        controller: _pageController,
+                                        itemBuilder: (context, imageIndex) {
+                                          final imageUrl = placeImages[imageIndex];
+                                          return Image.network(
+                                            imageUrl,
+                                            fit: BoxFit.cover,
+                                          );
+                                        },
                                       ),
                                     ),
-                                    PopupMenuButton(
-                                      itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                          child: TextButton(
-                                            onPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      UploadPlaceScreen(
-                                                    editUploadedPlace:
-                                                        placeData,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                            child: const Text('Edit'),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Align(
+                                            alignment: Alignment.center,
+                                            child: Text(placeName),
                                           ),
                                         ),
-                                        PopupMenuItem(
-                                          child: TextButton(
-                                            onPressed: () {
-                                              deletePlaceWithPhotos(
-                                                  placeId, placeName);
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Delete'),
-                                          ),
+                                        PopupMenuButton(
+                                          itemBuilder: (context) => [
+                                            PopupMenuItem(
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          UploadPlaceScreen(
+                                                        editUploadedPlace:
+                                                            placeData,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: const Text('Edit'),
+                                              ),
+                                            ),
+                                            PopupMenuItem(
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  deletePlaceWithPhotos(
+                                                      placeId, placeName);
+                                                  Navigator.pop(context);
+                                                },
+                                                child: const Text('Delete'),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              )
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  )
+                ],
+              ),
             ],
           ),
         ),
