@@ -1,4 +1,4 @@
-import 'package:a_tour_action/screens/game%20tab/game_quiz_screen.dart';
+import 'package:a_tour_action/screens/user/game%20tab/game_quiz_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import the Firestore package
 import 'package:flutter/material.dart';
 
@@ -21,24 +21,24 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   Future<void> fetchCategoriesFromFirestore() async {
     try {
-  final querySnapshot = await FirebaseFirestore.instance.collection('categories').get();
-  // Rest of the code for processing data
-  if (querySnapshot.docs.isNotEmpty) {
-      setState(() {
-        categories = querySnapshot.docs.map((doc) {
-          return {
-            'name': doc['name'],
-            'imagePath': doc['imagePath'],
-          };
-        }).toList();
-      });
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('categories').get();
+      // Rest of the code for processing data
+      if (querySnapshot.docs.isNotEmpty) {
+        setState(() {
+          categories = querySnapshot.docs.map((doc) {
+            return {
+              'name': doc['name'],
+              'imagePath': doc['imagePath'],
+            };
+          }).toList();
+        });
+      } else {
+        const Text('error');
+      }
+    } catch (error) {
+      print("Error retrieving data from Firestore: $error");
     }
-    else {
-      const Text('error');
-    }
-} catch (error) {
-  print("Error retrieving data from Firestore: $error");
-}
 
     // final querySnapshot = await FirebaseFirestore.instance.collection('categories').get();
 
@@ -59,7 +59,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   void handleCategoryTap(int index) {
     setState(() {
-      selectedCategory = categories[index]['name']; // Set the selected category based on the tapped image index
+      selectedCategory = categories[index]
+          ['name']; // Set the selected category based on the tapped image index
     });
   }
 
@@ -82,12 +83,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      handleCategoryTap(index); // Set the selected category when an image is tapped
+                      handleCategoryTap(
+                          index); // Set the selected category when an image is tapped
                     },
                     child: Container(
                       margin: const EdgeInsets.all(8),
                       child: Image.network(
-                        categories[index]['imagePath'], // Use the image path from Firestore
+                        categories[index]
+                            ['imagePath'], // Use the image path from Firestore
                         width: 150, // Adjust the width and height as needed
                         height: 150,
                         fit: BoxFit.cover,
@@ -104,7 +107,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const GameQuizScreen(), // Pass the selected category
+                      builder: (context) =>
+                          const GameQuizScreen(), // Pass the selected category
                     ),
                   );
                 } else {
@@ -114,7 +118,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
               child: const Text("Start Quiz"),
             ),
             if (selectedCategory.isNotEmpty)
-              Text("Selected Category: $selectedCategory"), // Display the selected category
+              Text(
+                  "Selected Category: $selectedCategory"), // Display the selected category
           ],
         ),
       ),
